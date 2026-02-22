@@ -1,0 +1,47 @@
+/* Mengatur font global */
+body {
+  font-family: 'Inter', sans-serif;
+  padding-top: 70px; /* Supaya konten tidak tertutup Navbar Fixed */
+  background-color: #f8f9fa;
+}
+
+/* Kustomisasi Hero Section */
+.hero-section {
+  min-height: 90vh;
+  background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%);
+}
+
+/* Efek Hover pada Kartu Program */
+.program-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.program-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 1rem 3rem rgba(0,0,0,.1) !important;
+}
+
+/* Warna Hijau Khusus (Opsional, jika ingin menimpa hijau default Bootstrap) */
+.text-success {
+  color: #198754 !important; /* Hijau DMI */
+}
+
+.btn-success {
+  background-color: #198754;
+  border-color: #198754;
+}
+
+.btn-success:hover {
+  background-color: #157347;
+  border-color: #146c43;
+}
+
+.btn-outline-success {
+  color: #198754;
+  border-color: #198754;
+}
+
+.btn-outline-success:hover {
+  background-color: #198754;
+  color: white;
+}
