@@ -1,6 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { Routes, Route, useLocation } from 'react-router-dom';
-import './App.css';
 
 // Import Komponen
 import Navbar from './components/Navbar';
