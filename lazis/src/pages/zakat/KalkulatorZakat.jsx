@@ -280,7 +280,7 @@ const KalkulatorZakat = () => {
                                     {metode === 'qris' && (
                                         <div className="kz-qris-box">
                                             <div className="kz-qris-img">
-                                                <img src="/lazisdmidkijakarta/lazis/src/pages/zakat/qris-lazis-dmi.jpeg" />
+                                                <img src="Syawal1997/lazisdmidkijakarta/lazis/src/pages/zakat/qris-lazis-dmi.jpeg" />
                                             </div>
                                             <div className="kz-qris-label">QRIS Lazis DMI DKI Jakarta</div>
                                             <div className="kz-qris-sub">Scan dengan aplikasi dompet digital / m-banking Anda</div>
