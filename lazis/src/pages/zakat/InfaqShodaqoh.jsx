@@ -28,6 +28,8 @@ const KEUTAMAAN = [
     { ayat: 'QS. Al-Baqarah: 274', teks: '"Orang-orang yang menginfakkan hartanya di malam dan siang hari, baik secara tersembunyi maupun terang-terangan, mereka mendapat pahala di sisi Tuhan mereka."' },
 ];
 
+import './InfaqShodaqoh.css';
+
 const InfaqShodaqoh = () => {
     const [kategori, setKategori] = useState('umum');
     const [nominal, setNominal] = useState('');
@@ -46,10 +48,16 @@ const InfaqShodaqoh = () => {
     };
 
     const handleKonfirmasiWA = () => {
+        if (!namaDonatur.trim()) {
+            alert('Silakan masukkan nama Anda untuk konfirmasi.');
+            document.getElementById('is-nama')?.focus();
+            return;
+        }
+
         const nomorWA = '6282117460200';
         const msg = encodeURIComponent(
             `Assalamualaikum, saya ingin mengkonfirmasi pembayaran Infaq/Shodaqoh:\n\n` +
-            `Nama       : ${namaDonatur || '(belum diisi)'}\n` +
+            `Nama       : ${namaDonatur}\n` +
             `Peruntukan : ${katObj?.label}\n` +
             `Nominal    : ${formatRp(nominalNum)}\n` +
             `Metode     : ${metode === 'qris' ? 'QRIS' : 'Transfer Bank'}\n` +
@@ -61,158 +69,6 @@ const InfaqShodaqoh = () => {
 
     return (
         <div className="is-page">
-            <style>{`
-        .is-page { font-family: 'Segoe UI', sans-serif; background: #f4f7f4; }
-
-        /* ── Hero ── */
-        .is-hero {
-          background: linear-gradient(135deg, #004d40 0%, #00695c 55%, #00897b 100%);
-          padding: 7rem 0 5rem; text-align: center; color: #fff; position: relative; overflow: hidden;
-        }
-        .is-hero::before {
-          content: '';
-          position: absolute; inset: 0;
-          background: radial-gradient(ellipse at 30% 60%, rgba(255,255,255,.06) 0%, transparent 65%);
-        }
-        .is-hero-badge {
-          display: inline-block; background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.3);
-          font-size: .75rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
-          padding: .35rem 1rem; border-radius: 50px; margin-bottom: 1rem;
-        }
-        .is-hero h1 { font-size: 2.6rem; font-weight: 900; margin: 0 0 .8rem; line-height: 1.15; }
-        .is-hero h1 span { color: #a7ffeb; }
-        .is-hero-desc { opacity: .85; font-size: .97rem; margin: 0 auto; max-width: 500px; line-height: 1.7; }
-
-        /* ── Ayat Banner ── */
-        .is-ayat-strip { background: #e0f2f1; padding: 1.5rem; border-bottom: 1px solid #b2dfdb; }
-        .is-ayat-inner { max-width: 860px; margin: 0 auto; text-align: center; }
-        .is-ayat-text  { font-style: italic; color: #00695c; font-size: .93rem; line-height: 1.7; margin: 0 0 .3rem; font-weight: 500; }
-        .is-ayat-ref   { font-size: .78rem; color: #00897b; font-weight: 700; }
-
-        /* ── Main Layout ── */
-        .is-main { max-width: 1100px; margin: 0 auto; padding: 3rem 1.5rem 4rem; display: grid; grid-template-columns: 1fr 380px; gap: 2rem; align-items: start; }
-
-        /* ── Kategori Grid ── */
-        .is-kat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
-        .is-kat-card {
-          background: #fff; border-radius: 14px; padding: 1.2rem; cursor: pointer;
-          border: 2px solid #e0e0e0; transition: all .2s; display: flex; flex-direction: column; gap: .4rem;
-        }
-        .is-kat-card:hover     { border-color: #80cbc4; background: #e0f2f1; }
-        .is-kat-card.active    { border-color: #00897b; background: #e0f2f1; }
-        .is-kat-icon  { font-size: 1.6rem; }
-        .is-kat-label { font-size: .88rem; font-weight: 700; color: #004d40; }
-        .is-kat-desc  { font-size: .75rem; color: #666; line-height: 1.45; }
-        .is-kat-badge {
-          display: inline-block; margin-top: auto;
-          font-size: .65rem; font-weight: 700; padding: .2rem .6rem;
-          border-radius: 50px; background: #e0f2f1; color: #00695c;
-        }
-        .is-kat-card.active .is-kat-badge { background: #00897b; color: #fff; }
-
-        /* ── Nominal Section ── */
-        .is-section-title { font-size: 1rem; font-weight: 700; color: #1a2e2e; margin: 0 0 .8rem; display: flex; align-items: center; gap: .5rem; }
-        .is-nominal-chips { display: flex; flex-wrap: wrap; gap: .6rem; margin-bottom: 1rem; }
-        .is-chip {
-          padding: .45rem 1rem; border: 2px solid #b2dfdb; border-radius: 50px;
-          background: #fff; font-size: .83rem; font-weight: 600; cursor: pointer;
-          color: #00695c; transition: all .15s;
-        }
-        .is-chip:hover, .is-chip.active { background: #00897b; border-color: #00897b; color: #fff; }
-        .is-input {
-          width: 100%; padding: .7rem 1rem; border: 2px solid #e0e0e0; border-radius: 10px;
-          font-size: .95rem; outline: none; transition: border-color .2s; box-sizing: border-box;
-        }
-        .is-input:focus { border-color: #00897b; }
-        .is-input-hint { font-size: .75rem; color: #888; margin-top: .3rem; }
-
-        /* ── Form Panel ── */
-        .is-form-panel {
-          background: #fff; border-radius: 18px; box-shadow: 0 4px 20px rgba(0,0,0,.09);
-          overflow: hidden; position: sticky; top: 90px;
-        }
-        .is-form-header { background: linear-gradient(135deg, #004d40, #00897b); padding: 1.4rem 1.8rem; color: #fff; }
-        .is-form-header h2 { font-size: 1.1rem; font-weight: 800; margin: 0 0 .2rem; }
-        .is-form-header p  { font-size: .8rem; opacity: .85; margin: 0; }
-        .is-form-body { padding: 1.5rem 1.8rem; }
-        .is-form-field { margin-bottom: 1rem; }
-        .is-form-label { display: block; font-size: .82rem; font-weight: 600; color: #374737; margin-bottom: .35rem; }
-        .is-nominal-preview {
-          background: #e0f2f1; border-radius: 10px; padding: .8rem 1rem;
-          margin-bottom: 1rem; text-align: center;
-        }
-        .is-nominal-preview-label { font-size: .73rem; color: #00695c; font-weight: 600; }
-        .is-nominal-preview-val   { font-size: 1.6rem; font-weight: 900; color: #004d40; }
-        .is-btn-lanjut {
-          width: 100%; padding: .9rem; background: linear-gradient(135deg, #00695c, #00897b);
-          color: #fff; border: none; border-radius: 12px; font-size: .97rem; font-weight: 700;
-          cursor: pointer; transition: opacity .2s;
-        }
-        .is-btn-lanjut:hover { opacity: .9; }
-        .is-btn-lanjut:disabled { opacity: .5; cursor: not-allowed; }
-
-        /* ── Payment ── */
-        .is-payment { margin-top: 1.2rem; border-top: 1px solid #e0f2f1; padding-top: 1.2rem; }
-        .is-payment h3 { font-size: .95rem; font-weight: 800; color: #004d40; margin: 0 0 .9rem; }
-        .is-metode-tabs { display: flex; gap: .5rem; margin-bottom: 1.1rem; }
-        .is-tab {
-          flex: 1; padding: .55rem; border: 2px solid #e0e0e0; border-radius: 10px;
-          background: #fff; cursor: pointer; font-size: .8rem; font-weight: 600;
-          color: #666; text-align: center; transition: all .15s;
-        }
-        .is-tab.active { border-color: #00897b; background: #e0f2f1; color: #004d40; }
-
-        /* QRIS */
-        .is-qris-box { text-align: center; margin-bottom: 1rem; }
-        .is-qris-img {
-          width: 160px; height: 160px; border: 3px solid #b2dfdb; border-radius: 12px;
-          margin: 0 auto .7rem; display: flex; align-items: center; justify-content: center;
-          background: #e0f2f1; font-size: 3.5rem;
-        }
-        .is-qris-label { font-size: .82rem; font-weight: 700; color: #004d40; }
-        .is-qris-sub   { font-size: .73rem; color: #666; }
-
-        /* Transfer */
-        .is-rek-list { display: flex; flex-direction: column; gap: .6rem; margin-bottom: 1rem; }
-        .is-rek-item {
-          display: flex; align-items: center; gap: .8rem; background: #e0f2f1;
-          border: 1px solid #b2dfdb; border-radius: 10px; padding: .7rem .9rem;
-        }
-        .is-rek-bank   { font-size: .72rem; font-weight: 800; color: #00695c; min-width: 44px; }
-        .is-rek-no     { font-size: .88rem; font-weight: 700; color: #1a2e2e; letter-spacing: .04em; }
-        .is-rek-an     { font-size: .72rem; color: #666; }
-
-        /* WA Button */
-        .is-btn-wa {
-          width: 100%; padding: .8rem; background: #25d366; color: #fff;
-          border: none; border-radius: 12px; font-size: .88rem; font-weight: 700;
-          cursor: pointer; display: flex; align-items: center; justify-content: center; gap: .5rem;
-          transition: background .2s;
-        }
-        .is-btn-wa:hover { background: #1da851; }
-
-        /* ── Info Section ── */
-        .is-info-section { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem 4rem; }
-        .is-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
-        .is-info-card { background: #fff; border-radius: 16px; padding: 1.8rem; box-shadow: 0 2px 12px rgba(0,0,0,.06); border-top: 3px solid #00897b; }
-        .is-info-title { font-size: 1rem; font-weight: 800; color: #004d40; margin: 0 0 .8rem; }
-        .is-info-list  { list-style: none; padding: 0; margin: 0; }
-        .is-info-list li { padding: .45rem 0 .45rem 1.6rem; position: relative; font-size: .85rem; color: #444; border-bottom: 1px solid #f0f0f0; }
-        .is-info-list li:last-child { border-bottom: none; }
-        .is-info-list li::before { content: '▸'; position: absolute; left: 0; color: #00897b; font-weight: 700; }
-
-        /* ── Responsive ── */
-        @media (max-width: 860px) {
-          .is-main { grid-template-columns: 1fr; }
-          .is-form-panel { position: static; }
-          .is-info-grid { grid-template-columns: 1fr; }
-        }
-        @media (max-width: 576px) {
-          .is-kat-grid { grid-template-columns: 1fr; }
-          .is-hero h1 { font-size: 1.9rem; }
-        }
-      `}</style>
-
             {/* ── Hero ── */}
             <div className="is-hero">
                 <span className="is-hero-badge">Infaq &amp; Shodaqoh</span>

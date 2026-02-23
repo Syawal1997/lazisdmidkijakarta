@@ -16,7 +16,7 @@ import ProfilSidebar from './ProfilSidebar';
 import TentangKami from './TentangKami';
 import VisiMisi from './VisiMisi';
 import SusunanPengurus from './SusunanPengurus';
-import profilStyles from './profilStyles';
+import './Profil.css';
 
 const Profil = ({ subPage }) => {
     // Pilih komponen halaman berdasarkan subPage prop
@@ -30,15 +30,10 @@ const Profil = ({ subPage }) => {
     };
 
     return (
-        <>
-            {/* Inject CSS terpusat — hanya di-render sekali di DOM */}
-            <style>{profilStyles}</style>
-
-            <div className="profil-wrapper">
-                <ProfilSidebar />
-                {renderPage()}
-            </div>
-        </>
+        <div className="profil-wrapper">
+            <ProfilSidebar />
+            {renderPage()}
+        </div>
     );
 };
 
