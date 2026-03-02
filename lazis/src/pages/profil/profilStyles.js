@@ -26,7 +26,7 @@ const profilStyles = `
     top: 90px;
   }
   .sidebar-header {
-    background: linear-gradient(135deg, #1b5e20, #2e7d32);
+    background: linear-gradient(135deg, #059669, #10B981);
     color: #fff;
     padding: 1.2rem 1.4rem;
     display: flex;
@@ -47,15 +47,15 @@ const profilStyles = `
     transition: all .2s;
   }
   .sidebar-link:hover {
-    background: #f1f8e9;
-    color: #2e7d32;
-    border-left-color: #81c784;
+    background: #f0fdf4;
+    color: #059669;
+    border-left-color: #34d399;
   }
   .sidebar-link.active {
-    background: #e8f5e9;
-    color: #1b5e20;
+    background: #ecfdf5;
+    color: #047857;
     font-weight: 700;
-    border-left-color: #2e7d32;
+    border-left-color: #10B981;
   }
 
   /* ---- Content ---- */
@@ -71,9 +71,9 @@ const profilStyles = `
     align-items: center;
     margin-bottom: 2.5rem;
   }
-  .tentang-hero  { background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 50%, #388e3c 100%); }
-  .visimisi-hero { background: linear-gradient(135deg, #004d40 0%, #00695c 50%, #00796b 100%); }
-  .pengurus-hero { background: linear-gradient(135deg, #1a237e 0%, #283593 50%, #3949ab 100%); }
+  .tentang-hero  { background: linear-gradient(135deg, #065f46 0%, #059669 50%, #10B981 100%); }
+  .visimisi-hero { background: linear-gradient(135deg, #064e3b 0%, #047857 50%, #059669 100%); }
+  .pengurus-hero { background: linear-gradient(135deg, #047857 0%, #059669 50%, #10b981 100%); }
   .profil-hero-overlay {
     position: absolute; inset: 0;
     background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
@@ -122,13 +122,13 @@ const profilStyles = `
     font-weight: 700;
     letter-spacing: .12em;
     text-transform: uppercase;
-    color: #2e7d32;
+    color: #059669;
     margin-bottom: .4rem;
   }
   .profil-section-title {
     font-size: 1.5rem;
     font-weight: 800;
-    color: #1b2d1b;
+    color: #064e3b;
     margin: 0 0 .4rem;
   }
   .profil-section-subtitle {
@@ -139,11 +139,11 @@ const profilStyles = `
 
   /* ---- Quote ---- */
   .profil-quote {
-    border-left: 4px solid #4caf50;
+    border-left: 4px solid #10b981;
     padding: .8rem 1.2rem;
-    background: #f1f8e9;
+    background: #ecfdf5;
     border-radius: 0 8px 8px 0;
-    color: #2d4a2d;
+    color: #065f46;
     font-style: italic;
     font-size: 1rem;
     line-height: 1.7;
@@ -168,7 +168,7 @@ const profilStyles = `
     content: '✓';
     position: absolute;
     left: 0;
-    color: #4caf50;
+    color: #10b981;
     font-weight: 700;
   }
 
@@ -180,12 +180,12 @@ const profilStyles = `
     margin-bottom: 1.8rem;
   }
   .profil-stat-card {
-    background: linear-gradient(135deg, #2e7d32, #43a047);
+    background: linear-gradient(135deg, #059669, #10b981);
     border-radius: 14px;
     padding: 1.5rem 1rem;
     text-align: center;
     color: #fff;
-    box-shadow: 0 4px 16px rgba(46,125,50,.3);
+    box-shadow: 0 4px 16px rgba(16,185,129,.3);
     transition: transform .2s;
   }
   .profil-stat-card:hover { transform: translateY(-4px); }
@@ -213,7 +213,7 @@ const profilStyles = `
     top: 0;
     bottom: 0;
     width: 3px;
-    background: linear-gradient(to bottom, #c8e6c9, #2e7d32, #c8e6c9);
+    background: linear-gradient(to bottom, #d1fae5, #10b981, #d1fae5);
     transform: translateX(-50%);
     z-index: 0;
   }
@@ -230,10 +230,10 @@ const profilStyles = `
     top: .4rem;
     width: 14px;
     height: 14px;
-    background: #2e7d32;
+    background: #10b981;
     border: 3px solid #fff;
     border-radius: 50%;
-    box-shadow: 0 0 0 3px #c8e6c9;
+    box-shadow: 0 0 0 3px #d1fae5;
   }
   .timeline-item.left  .timeline-dot { right: -7px; }
   .timeline-item.right .timeline-dot { left: -7px;  }
@@ -242,14 +242,14 @@ const profilStyles = `
     border-radius: 12px;
     padding: 1rem 1.3rem;
     box-shadow: 0 2px 12px rgba(0,0,0,.09);
-    border: 1px solid #e8f5e9;
+    border: 1px solid #ecfdf5;
     transition: box-shadow .2s;
   }
-  .timeline-card:hover { box-shadow: 0 6px 20px rgba(46,125,50,.15); }
+  .timeline-card:hover { box-shadow: 0 6px 20px rgba(16,185,129,.15); }
   .timeline-year {
     display: inline-block;
-    background: #e8f5e9;
-    color: #2e7d32;
+    background: #ecfdf5;
+    color: #059669;
     font-weight: 700;
     font-size: .78rem;
     padding: .2rem .7rem;
@@ -259,7 +259,7 @@ const profilStyles = `
   .timeline-title {
     font-size: .97rem;
     font-weight: 700;
-    color: #1b2d1b;
+    color: #064e3b;
     margin: 0 0 .3rem;
   }
   .timeline-desc {
@@ -280,8 +280,8 @@ const profilStyles = `
     display: flex;
     align-items: flex-start;
     gap: 1rem;
-    background: #f9fbe7;
-    border: 1px solid #dcedc8;
+    background: #f0fdf4;
+    border: 1px solid #d1fae5;
     border-radius: 12px;
     padding: 1.1rem 1.3rem;
   }
@@ -291,7 +291,7 @@ const profilStyles = `
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: .08em;
-    color: #558b2f;
+    color: #047857;
     margin-bottom: .15rem;
   }
   .legalitas-value { font-size: .9rem; color: #333; font-weight: 500; }
@@ -301,17 +301,17 @@ const profilStyles = `
     display: flex;
     align-items: center;
     gap: 1.5rem;
-    background: linear-gradient(120deg, #e8f5e9, #f1f8e9);
+    background: linear-gradient(120deg, #ecfdf5, #f0fdf4);
     border-radius: 16px;
     padding: 2rem 2.2rem;
-    border: 2px solid #c8e6c9;
+    border: 2px solid #d1fae5;
     margin-top: 1.2rem;
   }
   .visi-icon { font-size: 3rem; flex-shrink: 0; }
   .visi-text {
     font-size: 1.25rem;
     font-weight: 700;
-    color: #1b5e20;
+    color: #065f46;
     font-style: italic;
     line-height: 1.5;
     margin: 0;
@@ -330,7 +330,7 @@ const profilStyles = `
   .misi-card {
     background: #fff;
     border-radius: 14px;
-    border: 1px solid #e0f2f1;
+    border: 1px solid #ecfdf5;
     padding: 1.4rem 1.5rem;
     box-shadow: 0 2px 10px rgba(0,0,0,.05);
     transition: transform .2s, box-shadow .2s;
@@ -339,35 +339,35 @@ const profilStyles = `
   }
   .misi-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(46,125,50,.15);
+    box-shadow: 0 8px 24px rgba(16,185,129,.15);
   }
   .misi-card::before {
     content: '';
     position: absolute;
     top: 0; left: 0; right: 0;
     height: 3px;
-    background: linear-gradient(90deg, #2e7d32, #66bb6a);
+    background: linear-gradient(90deg, #10b981, #34d399);
   }
   .misi-number {
     position: absolute;
     top: 1rem; right: 1.2rem;
     font-size: 2.5rem;
     font-weight: 900;
-    color: #e8f5e9;
+    color: #ecfdf5;
     line-height: 1;
   }
   .misi-icon { font-size: 1.8rem; margin-bottom: .6rem; }
   .misi-title {
     font-size: .97rem;
     font-weight: 700;
-    color: #1b5e20;
+    color: #059669;
     margin: 0 0 .5rem;
   }
   .misi-desc { font-size: .83rem; color: #555; margin: 0; line-height: 1.55; }
 
   /* ---- Mutu Section ---- */
   .mutu-section {
-    background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 60%, #388e3c 100%) !important;
+    background: linear-gradient(135deg, #065f46 0%, #059669 60%, #10b981 100%) !important;
     color: #fff;
   }
   .mutu-grid {
@@ -400,7 +400,7 @@ const profilStyles = `
     font-size: .7rem;
     font-weight: 800;
     letter-spacing: .08em;
-    color: #c8e6c9;
+    color: #d1fae5;
     margin-bottom: .5rem;
   }
   .mutu-desc { font-size: .73rem; color: rgba(255,255,255,.75); line-height: 1.4; }
@@ -410,10 +410,10 @@ const profilStyles = `
     display: flex;
     align-items: center;
     gap: 2rem;
-    background: linear-gradient(120deg, #e8f5e9, #f9fbe7);
+    background: linear-gradient(120deg, #ecfdf5, #f0fdf4);
     border-radius: 16px;
     padding: 2rem 2.2rem;
-    border: 2px solid #c8e6c9;
+    border: 2px solid #d1fae5;
     margin-top: 1.2rem;
   }
   .ketua-pw-avatar { position: relative; flex-shrink: 0; }
@@ -421,7 +421,7 @@ const profilStyles = `
     position: absolute;
     bottom: -6px; left: 50%;
     transform: translateX(-50%);
-    background: #2e7d32;
+    background: #059669;
     color: #fff;
     font-size: .68rem;
     font-weight: 700;
@@ -434,12 +434,12 @@ const profilStyles = `
   .ketua-pw-nama {
     font-size: 1.3rem;
     font-weight: 800;
-    color: #1b5e20;
+    color: #064e3b;
     margin-bottom: .2rem;
   }
   .ketua-pw-jabatan {
     font-size: .85rem;
-    color: #4caf50;
+    color: #059669;
     font-weight: 600;
     margin-bottom: .8rem;
   }
@@ -458,12 +458,12 @@ const profilStyles = `
     padding: 1.8rem 1.3rem;
     text-align: center;
     box-shadow: 0 4px 16px rgba(0,0,0,.07);
-    border: 1px solid #e8f5e9;
+    border: 1px solid #ecfdf5;
     transition: transform .2s, box-shadow .2s;
   }
   .pengurus-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 28px rgba(46,125,50,.14);
+    box-shadow: 0 10px 28px rgba(16,185,129,.14);
   }
   .pengurus-avatar {
     display: flex;
@@ -473,14 +473,14 @@ const profilStyles = `
   .pengurus-nama {
     font-size: 1rem;
     font-weight: 700;
-    color: #1b5e20;
+    color: #064e3b;
     margin-bottom: .3rem;
   }
   .pengurus-jabatan {
     font-size: .78rem;
     color: #666;
     font-weight: 600;
-    background: #e8f5e9;
+    background: #ecfdf5;
     display: inline-block;
     padding: .2rem .8rem;
     border-radius: 50px;
@@ -499,7 +499,7 @@ const profilStyles = `
     .profil-sidebar { width: 100%; position: static; }
     .sidebar-nav { display: flex; }
     .sidebar-link { flex: 1; text-align: center; border-left: none; border-bottom: 3px solid transparent; }
-    .sidebar-link.active { border-bottom-color: #2e7d32; border-left: none; }
+    .sidebar-link.active { border-bottom-color: #10b981; border-left: none; }
     .profil-stats-grid { grid-template-columns: repeat(2, 1fr); }
     .timeline-line { display: none; }
     .timeline-item { width: 100%; left: 0 !important; text-align: left; padding: 0 0 1.5rem 2rem; }

@@ -113,9 +113,9 @@ const VisiMisi = () => {
 
             {/* ── Kebijakan Mutu ── */}
             <div className="profil-section mutu-section">
-                <div className="profil-section-label" style={{ color: '#a8d5b5' }}>Kebijakan Mutu</div>
+                <div className="profil-section-label" style={{ color: '#d1fae5' }}>Kebijakan Mutu</div>
                 <h2 className="profil-section-title" style={{ color: '#fff' }}>Kebijakan Mutu Manajemen</h2>
-                <p className="profil-section-subtitle" style={{ color: '#c8e6c9' }}>
+                <p className="profil-section-subtitle" style={{ color: '#ecfdf5' }}>
                     Lima prinsip utama yang menjadi landasan pengelolaan Lazis DMI DKI Jakarta
                 </p>
                 <div className="mutu-grid">

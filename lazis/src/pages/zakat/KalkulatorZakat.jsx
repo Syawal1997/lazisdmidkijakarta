@@ -161,11 +161,11 @@ const KalkulatorZakat = () => {
     return (
         <div className="kz-page">
             <style>{`
-        .kz-page { font-family: 'Segoe UI', sans-serif; background: #f4f7f4; min-height: 100vh; }
+        .kz-page { font-family: 'Segoe UI', sans-serif; background: #f9fafb; min-height: 100vh; }
 
         /* ── Hero ── */
         .kz-hero {
-          background: linear-gradient(135deg, #1b5e20, #2e7d32 55%, #33691e);
+          background: linear-gradient(135deg, #065f46, #059669 55%, #10b981);
           padding: 6rem 0 3rem; text-align: center; color: #fff;
         }
         .kz-hero-badge {
@@ -181,19 +181,19 @@ const KalkulatorZakat = () => {
 
         /* ── Jenis Sidebar ── */
         .kz-jenis-panel { background: #fff; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,.08); overflow: hidden; position: sticky; top: 90px; }
-        .kz-jenis-header { background: linear-gradient(135deg, #1b5e20, #2e7d32); color: #fff; padding: 1rem 1.3rem; font-size: .9rem; font-weight: 700; }
+        .kz-jenis-header { background: linear-gradient(135deg, #065f46, #059669); color: #fff; padding: 1rem 1.3rem; font-size: .9rem; font-weight: 700; }
         .kz-jenis-btn {
           display: flex; align-items: center; gap: .7rem; width: 100%; text-align: left;
           padding: .75rem 1.2rem; border: none; background: none; cursor: pointer;
           font-size: .85rem; color: #444; border-left: 3px solid transparent; transition: all .15s;
         }
-        .kz-jenis-btn:hover  { background: #f1f8e9; color: #2e7d32; border-left-color: #a5d6a7; }
-        .kz-jenis-btn.active { background: #e8f5e9; color: #1b5e20; font-weight: 700; border-left-color: #2e7d32; }
+        .kz-jenis-btn:hover  { background: #f0fdf4; color: #059669; border-left-color: #34d399; }
+        .kz-jenis-btn.active { background: #ecfdf5; color: #064e3b; font-weight: 700; border-left-color: #10b981; }
         .kz-jenis-btn-icon   { font-size: 1.1rem; flex-shrink: 0; }
 
         /* ── Calculator Card ── */
         .kz-calc-card { background: #fff; border-radius: 18px; box-shadow: 0 4px 20px rgba(0,0,0,.08); overflow: hidden; }
-        .kz-calc-header { background: linear-gradient(135deg, #2e7d32, #43a047); padding: 1.5rem 2rem; color: #fff; }
+        .kz-calc-header { background: linear-gradient(135deg, #059669, #10b981); padding: 1.5rem 2rem; color: #fff; }
         .kz-calc-header h2 { font-size: 1.25rem; font-weight: 800; margin: 0 0 .3rem; }
         .kz-calc-header p  { font-size: .82rem; opacity: .85; margin: 0; }
         .kz-calc-body { padding: 1.8rem 2rem; }
@@ -205,9 +205,9 @@ const KalkulatorZakat = () => {
           width: 100%; padding: .65rem 1rem; border: 2px solid #e0e0e0; border-radius: 10px;
           font-size: .9rem; transition: border-color .2s; outline: none; box-sizing: border-box;
         }
-        .kz-input:focus { border-color: #4caf50; }
+        .kz-input:focus { border-color: #10b981; }
         .kz-btn-hitung {
-          width: 100%; padding: .9rem; background: linear-gradient(135deg, #2e7d32, #43a047);
+          width: 100%; padding: .9rem; background: linear-gradient(135deg, #059669, #10b981);
           color: #fff; border: none; border-radius: 12px; font-size: 1rem; font-weight: 700;
           cursor: pointer; transition: opacity .2s, transform .2s;
         }
@@ -215,70 +215,70 @@ const KalkulatorZakat = () => {
 
         /* ── Hasil ── */
         .kz-hasil { margin-top: 1.5rem; border-radius: 14px; overflow: hidden; }
-        .kz-hasil-lolos { background: linear-gradient(120deg, #e8f5e9, #f1f8e9); border: 2px solid #a5d6a7; border-radius: 14px; padding: 1.5rem; }
+        .kz-hasil-lolos { background: linear-gradient(120deg, #ecfdf5, #f0fdf4); border: 2px solid #34d399; border-radius: 14px; padding: 1.5rem; }
         .kz-hasil-gagal { background: #fff8e1; border: 2px solid #ffe082; border-radius: 14px; padding: 1.5rem; }
-        .kz-hasil-label { font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: #558b2f; margin-bottom: .5rem; }
-        .kz-hasil-amount { font-size: 2rem; font-weight: 900; color: #1b5e20; margin: 0 0 .3rem; }
+        .kz-hasil-label { font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: #047857; margin-bottom: .5rem; }
+        .kz-hasil-amount { font-size: 2rem; font-weight: 900; color: #064e3b; margin: 0 0 .3rem; }
         .kz-hasil-sub   { font-size: .82rem; color: #666; margin: 0; }
         .kz-hasil-gagal-title { font-weight: 700; color: #e65100; margin-bottom: .3rem; }
         .kz-btn-bayar {
-          width: 100%; margin-top: 1.1rem; padding: .85rem; background: #2e7d32;
+          width: 100%; margin-top: 1.1rem; padding: .85rem; background: #059669;
           color: #fff; border: none; border-radius: 12px; font-size: .95rem; font-weight: 700;
           cursor: pointer; transition: background .2s;
         }
-        .kz-btn-bayar:hover { background: #1b5e20; }
+        .kz-btn-bayar:hover { background: #064e3b; }
 
         /* ── Payment Modal Area ── */
-        .kz-payment { margin-top: 1.5rem; background: #fff; border: 2px solid #e8f5e9; border-radius: 16px; padding: 1.5rem; }
-        .kz-payment h3 { font-size: 1rem; font-weight: 800; color: #1b5e20; margin: 0 0 1rem; }
+        .kz-payment { margin-top: 1.5rem; background: #fff; border: 2px solid #ecfdf5; border-radius: 16px; padding: 1.5rem; }
+        .kz-payment h3 { font-size: 1rem; font-weight: 800; color: #064e3b; margin: 0 0 1rem; }
         .kz-metode-tabs { display: flex; gap: .6rem; margin-bottom: 1.3rem; }
         .kz-tab {
           flex: 1; padding: .6rem; border: 2px solid #e0e0e0; border-radius: 10px;
           background: #fff; cursor: pointer; font-size: .83rem; font-weight: 600; color: #666;
           transition: all .15s; text-align: center;
         }
-        .kz-tab.active { border-color: #4caf50; background: #e8f5e9; color: #1b5e20; }
+        .kz-tab.active { border-color: #10b981; background: #ecfdf5; color: #064e3b; }
 
         /* QRIS Display */
         .kz-qris-box { text-align: center; padding: 1rem 0; }
         .kz-qris-img {
-          width: 200px; height: 200px; border: 3px solid #c8e6c9; border-radius: 12px;
+          width: 200px; height: 200px; border: 3px solid #d1fae5; border-radius: 12px;
           margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center;
-          background: #f1f8e9; font-size: 4rem;
+          background: #f0fdf4; font-size: 4rem;
         }
-        .kz-qris-label { font-size: .85rem; font-weight: 700; color: #1b5e20; margin-bottom: .3rem; }
+        .kz-qris-label { font-size: .85rem; font-weight: 700; color: #064e3b; margin-bottom: .3rem; }
         .kz-qris-sub   { font-size: .78rem; color: #666; }
 
         /* Transfer Display */
         .kz-rek-list { display: flex; flex-direction: column; gap: .8rem; margin-bottom: 1rem; }
         .kz-rek-item {
-          display: flex; align-items: center; gap: 1rem; background: #f9fbe7;
-          border: 1px solid #dcedc8; border-radius: 10px; padding: .9rem 1.1rem;
+          display: flex; align-items: center; gap: 1rem; background: #f0fdf4;
+          border: 1px solid #d1fae5; border-radius: 10px; padding: .9rem 1.1rem;
         }
-        .kz-rek-bank { font-size: .75rem; font-weight: 800; color: #558b2f; min-width: 40px; }
+        .kz-rek-bank { font-size: .75rem; font-weight: 800; color: #047857; min-width: 40px; }
         .kz-rek-detail { flex: 1; }
-        .kz-rek-no    { font-size: .95rem; font-weight: 700; color: #1a2e1a; letter-spacing: .05em; }
+        .kz-rek-no    { font-size: .95rem; font-weight: 700; color: #064e3b; letter-spacing: .05em; }
         .kz-rek-an    { font-size: .75rem; color: #666; }
 
         /* Nama & Konfirmasi */
         .kz-nama-field { margin: 1rem 0; }
         .kz-btn-wa {
-          width: 100%; padding: .85rem; background: #25d366;
+          width: 100%; padding: .85rem; background: #10b981;
           color: #fff; border: none; border-radius: 12px; font-size: .9rem; font-weight: 700;
           cursor: pointer; display: flex; align-items: center; justify-content: center; gap: .5rem;
           transition: background .2s;
         }
-        .kz-btn-wa:hover { background: #1da851; }
+        .kz-btn-wa:hover { background: #059669; }
 
         /* ── Why Grid ── */
         .kz-why { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem 4rem; }
         .kz-why-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1.1rem; margin-top: 1.5rem; }
         .kz-why-card {
           background: #fff; border-radius: 14px; padding: 1.4rem 1.2rem; text-align: center;
-          box-shadow: 0 2px 12px rgba(0,0,0,.06); border-top: 3px solid #4caf50;
+          box-shadow: 0 2px 12px rgba(0,0,0,.06); border-top: 3px solid #10b981;
         }
         .kz-why-icon  { font-size: 2rem; margin-bottom: .6rem; }
-        .kz-why-title { font-size: .88rem; font-weight: 700; color: #1b5e20; margin: 0 0 .4rem; }
+        .kz-why-title { font-size: .88rem; font-weight: 700; color: #064e3b; margin: 0 0 .4rem; }
         .kz-why-desc  { font-size: .78rem; color: #666; line-height: 1.5; margin: 0; }
 
         /* ── Responsive ── */
@@ -395,7 +395,7 @@ const KalkulatorZakat = () => {
                                             </div>
                                             <div className="kz-qris-label">QRIS Lazis DMI DKI Jakarta</div>
                                             <div className="kz-qris-sub">Scan dengan aplikasi dompet digital / m-banking Anda</div>
-                                            <div style={{ marginTop: '.6rem', fontSize: '.82rem', background: '#e8f5e9', padding: '.5rem .8rem', borderRadius: 8, color: '#2e7d32', fontWeight: 600 }}>
+                                            <div style={{ marginTop: '.6rem', fontSize: '.82rem', background: '#ecfdf5', padding: '.5rem .8rem', borderRadius: 8, color: '#059669', fontWeight: 600 }}>
                                                 Nominal: {formatRp(hasil.zakat)}
                                             </div>
                                         </div>
@@ -417,7 +417,7 @@ const KalkulatorZakat = () => {
                                                     </div>
                                                 </div>
                                             ))}
-                                            <div style={{ fontSize: '.82rem', background: '#e8f5e9', padding: '.6rem 1rem', borderRadius: 8, color: '#2e7d32', fontWeight: 600 }}>
+                                            <div style={{ fontSize: '.82rem', background: '#ecfdf5', padding: '.6rem 1rem', borderRadius: 8, color: '#059669', fontWeight: 600 }}>
                                                 Nominal Transfer: {formatRp(hasil.zakat)}
                                             </div>
                                         </div>
@@ -449,8 +449,8 @@ const KalkulatorZakat = () => {
             {/* ── Mengapa Zakat di Lazis DMI DKI ── */}
             <div className="kz-why">
                 <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
-                    <div style={{ fontSize: '.75rem', fontWeight: 700, letterSpacing: '.1em', textTransform: 'uppercase', color: '#2e7d32', marginBottom: '.3rem' }}>Keunggulan</div>
-                    <h2 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#1a2e1a', margin: 0 }}>Mengapa Bayar Zakat di Lazis DMI DKI?</h2>
+                    <div style={{ fontSize: '.75rem', fontWeight: 700, letterSpacing: '.1em', textTransform: 'uppercase', color: '#059669', marginBottom: '.3rem' }}>Keunggulan</div>
+                    <h2 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#064e3b', margin: 0 }}>Mengapa Bayar Zakat di Lazis DMI DKI?</h2>
                 </div>
                 <div className="kz-why-grid">
                     {[

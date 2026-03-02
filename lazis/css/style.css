@@ -2,13 +2,15 @@
 :root {
     --primary-color: #10B981; /* Emerald Green */
     --primary-dark: #059669;
-    --secondary-color: #F59E0B; /* Gold/Orange */
-    --bg-light: #F3F4F6;
-    --text-dark: #1F2937;
-    --text-light: #6B7280;
+    --primary-deep: #064E3B;
+    --primary-light: #D1FAE5;
+    --secondary-color: #059669; /* Use dark green instead of orange */
+    --bg-light: #F9FAFB;
+    --text-dark: #111827;
+    --text-light: #4B5563;
     --white: #FFFFFF;
     --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    --radius: 0.5rem;
+    --radius: 0.75rem;
     --font-heading: 'Poppins', sans-serif;
     --font-body: 'Inter', sans-serif;
 }
