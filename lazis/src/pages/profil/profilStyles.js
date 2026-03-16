@@ -18,7 +18,7 @@ const profilStyles = `
   .profil-sidebar {
     width: 240px;
     flex-shrink: 0;
-    background: #fff;
+    background: var(--bg-white);
     border-radius: 16px;
     box-shadow: 0 4px 20px rgba(0,0,0,.08);
     overflow: hidden;
@@ -26,8 +26,8 @@ const profilStyles = `
     top: 90px;
   }
   .sidebar-header {
-    background: linear-gradient(135deg, #059669, #10B981);
-    color: #fff;
+    background: linear-gradient(135deg, var(--primary-600), var(--primary-500));
+    color: var(--bg-white);
     padding: 1.2rem 1.4rem;
     display: flex;
     align-items: center;
@@ -40,22 +40,22 @@ const profilStyles = `
   .sidebar-link {
     display: block;
     padding: .75rem 1.4rem;
-    color: #444;
+    color: var(--text-main);
     text-decoration: none;
     font-size: .9rem;
     border-left: 3px solid transparent;
     transition: all .2s;
   }
   .sidebar-link:hover {
-    background: #f0fdf4;
-    color: #059669;
-    border-left-color: #34d399;
+    background: var(--primary-lightest);
+    color: var(--primary-600);
+    border-left-color: var(--primary-400);
   }
   .sidebar-link.active {
-    background: #ecfdf5;
-    color: #047857;
+    background: var(--primary-lightest);
+    color: var(--primary-700);
     font-weight: 700;
-    border-left-color: #10B981;
+    border-left-color: var(--primary);
   }
 
   /* ---- Content ---- */
@@ -71,9 +71,9 @@ const profilStyles = `
     align-items: center;
     margin-bottom: 2.5rem;
   }
-  .tentang-hero  { background: linear-gradient(135deg, #065f46 0%, #059669 50%, #10B981 100%); }
-  .visimisi-hero { background: linear-gradient(135deg, #064e3b 0%, #047857 50%, #059669 100%); }
-  .pengurus-hero { background: linear-gradient(135deg, #047857 0%, #059669 50%, #10b981 100%); }
+  .tentang-hero  { background: linear-gradient(135deg, var(--primary-800) 0%, var(--primary-600) 50%, var(--primary) 100%); }
+  .visimisi-hero { background: linear-gradient(135deg, var(--primary-900) 0%, var(--primary-700) 50%, var(--primary-600) 100%); }
+  .pengurus-hero { background: linear-gradient(135deg, var(--primary-700) 0%, var(--primary-600) 50%, var(--primary) 100%); }
   .profil-hero-overlay {
     position: absolute; inset: 0;
     background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
@@ -86,7 +86,7 @@ const profilStyles = `
   .profil-hero-badge {
     display: inline-block;
     background: rgba(255,255,255,.2);
-    color: #fff;
+    color: var(--bg-white);
     font-size: .78rem;
     font-weight: 600;
     letter-spacing: .1em;
@@ -98,7 +98,7 @@ const profilStyles = `
   .profil-hero-title {
     font-size: 2rem;
     font-weight: 800;
-    color: #fff;
+    color: var(--bg-white);
     margin: 0 0 .5rem;
     line-height: 1.2;
   }
@@ -111,7 +111,7 @@ const profilStyles = `
 
   /* ---- Section ---- */
   .profil-section {
-    background: #fff;
+    background: var(--bg-white);
     border-radius: 16px;
     padding: 2rem 2.2rem;
     margin-bottom: 1.8rem;
@@ -122,28 +122,28 @@ const profilStyles = `
     font-weight: 700;
     letter-spacing: .12em;
     text-transform: uppercase;
-    color: #059669;
+    color: var(--primary-600);
     margin-bottom: .4rem;
   }
   .profil-section-title {
     font-size: 1.5rem;
     font-weight: 800;
-    color: #064e3b;
+    color: var(--primary-900);
     margin: 0 0 .4rem;
   }
   .profil-section-subtitle {
-    color: #666;
+    color: var(--text-muted);
     font-size: .9rem;
     margin: 0 0 1.5rem;
   }
 
   /* ---- Quote ---- */
   .profil-quote {
-    border-left: 4px solid #10b981;
+    border-left: 4px solid var(--primary);
     padding: .8rem 1.2rem;
-    background: #ecfdf5;
+    background: var(--primary-lightest);
     border-radius: 0 8px 8px 0;
-    color: #065f46;
+    color: var(--primary-800);
     font-style: italic;
     font-size: 1rem;
     line-height: 1.7;
@@ -159,16 +159,16 @@ const profilStyles = `
   .profil-list li {
     padding: .55rem 0 .55rem 1.8rem;
     position: relative;
-    color: #444;
+    color: var(--text-main);
     font-size: .93rem;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid var(--border-color);
   }
   .profil-list li:last-child { border-bottom: none; }
   .profil-list li::before {
     content: '✓';
     position: absolute;
     left: 0;
-    color: #10b981;
+    color: var(--primary);
     font-weight: 700;
   }
 
@@ -180,11 +180,11 @@ const profilStyles = `
     margin-bottom: 1.8rem;
   }
   .profil-stat-card {
-    background: linear-gradient(135deg, #059669, #10b981);
+    background: linear-gradient(135deg, var(--primary-600), var(--primary));
     border-radius: 14px;
     padding: 1.5rem 1rem;
     text-align: center;
-    color: #fff;
+    color: var(--bg-white);
     box-shadow: 0 4px 16px rgba(16,185,129,.3);
     transition: transform .2s;
   }
@@ -213,7 +213,7 @@ const profilStyles = `
     top: 0;
     bottom: 0;
     width: 3px;
-    background: linear-gradient(to bottom, #d1fae5, #10b981, #d1fae5);
+    background: linear-gradient(to bottom, var(--primary-100), var(--primary), var(--primary-100));
     transform: translateX(-50%);
     z-index: 0;
   }
@@ -230,26 +230,26 @@ const profilStyles = `
     top: .4rem;
     width: 14px;
     height: 14px;
-    background: #10b981;
-    border: 3px solid #fff;
+    background: var(--primary);
+    border: 3px solid var(--bg-white);
     border-radius: 50%;
-    box-shadow: 0 0 0 3px #d1fae5;
+    box-shadow: 0 0 0 3px var(--primary-100);
   }
   .timeline-item.left  .timeline-dot { right: -7px; }
   .timeline-item.right .timeline-dot { left: -7px;  }
   .timeline-card {
-    background: #fff;
+    background: var(--bg-white);
     border-radius: 12px;
     padding: 1rem 1.3rem;
     box-shadow: 0 2px 12px rgba(0,0,0,.09);
-    border: 1px solid #ecfdf5;
+    border: 1px solid var(--primary-lightest);
     transition: box-shadow .2s;
   }
   .timeline-card:hover { box-shadow: 0 6px 20px rgba(16,185,129,.15); }
   .timeline-year {
     display: inline-block;
-    background: #ecfdf5;
-    color: #059669;
+    background: var(--primary-lightest);
+    color: var(--primary-600);
     font-weight: 700;
     font-size: .78rem;
     padding: .2rem .7rem;
@@ -259,12 +259,12 @@ const profilStyles = `
   .timeline-title {
     font-size: .97rem;
     font-weight: 700;
-    color: #064e3b;
+    color: var(--primary-900);
     margin: 0 0 .3rem;
   }
   .timeline-desc {
     font-size: .82rem;
-    color: #666;
+    color: var(--text-muted);
     margin: 0;
     line-height: 1.5;
   }
@@ -280,8 +280,8 @@ const profilStyles = `
     display: flex;
     align-items: flex-start;
     gap: 1rem;
-    background: #f0fdf4;
-    border: 1px solid #d1fae5;
+    background: var(--primary-lightest);
+    border: 1px solid var(--primary-100);
     border-radius: 12px;
     padding: 1.1rem 1.3rem;
   }
@@ -291,27 +291,27 @@ const profilStyles = `
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: .08em;
-    color: #047857;
+    color: var(--primary-700);
     margin-bottom: .15rem;
   }
-  .legalitas-value { font-size: .9rem; color: #333; font-weight: 500; }
+  .legalitas-value { font-size: .9rem; color: var(--text-main); font-weight: 500; }
 
   /* ---- Visi Box ---- */
   .visi-box {
     display: flex;
     align-items: center;
     gap: 1.5rem;
-    background: linear-gradient(120deg, #ecfdf5, #f0fdf4);
+    background: linear-gradient(120deg, var(--primary-lightest), var(--primary-lightest));
     border-radius: 16px;
     padding: 2rem 2.2rem;
-    border: 2px solid #d1fae5;
+    border: 2px solid var(--primary-100);
     margin-top: 1.2rem;
   }
   .visi-icon { font-size: 3rem; flex-shrink: 0; }
   .visi-text {
     font-size: 1.25rem;
     font-weight: 700;
-    color: #065f46;
+    color: var(--primary-800);
     font-style: italic;
     line-height: 1.5;
     margin: 0;
@@ -328,9 +328,9 @@ const profilStyles = `
     margin-top: 1.2rem;
   }
   .misi-card {
-    background: #fff;
+    background: var(--bg-white);
     border-radius: 14px;
-    border: 1px solid #ecfdf5;
+    border: 1px solid var(--primary-lightest);
     padding: 1.4rem 1.5rem;
     box-shadow: 0 2px 10px rgba(0,0,0,.05);
     transition: transform .2s, box-shadow .2s;
@@ -346,29 +346,29 @@ const profilStyles = `
     position: absolute;
     top: 0; left: 0; right: 0;
     height: 3px;
-    background: linear-gradient(90deg, #10b981, #34d399);
+    background: linear-gradient(90deg, var(--primary), var(--primary-400));
   }
   .misi-number {
     position: absolute;
     top: 1rem; right: 1.2rem;
     font-size: 2.5rem;
     font-weight: 900;
-    color: #ecfdf5;
+    color: var(--primary-lightest);
     line-height: 1;
   }
   .misi-icon { font-size: 1.8rem; margin-bottom: .6rem; }
   .misi-title {
     font-size: .97rem;
     font-weight: 700;
-    color: #059669;
+    color: var(--primary-600);
     margin: 0 0 .5rem;
   }
-  .misi-desc { font-size: .83rem; color: #555; margin: 0; line-height: 1.55; }
+  .misi-desc { font-size: .83rem; color: var(--text-muted); margin: 0; line-height: 1.55; }
 
   /* ---- Mutu Section ---- */
   .mutu-section {
-    background: linear-gradient(135deg, #065f46 0%, #059669 60%, #10b981 100%) !important;
-    color: #fff;
+    background: linear-gradient(135deg, var(--primary-800) 0%, var(--primary-600) 60%, var(--primary) 100%) !important;
+    color: var(--bg-white);
   }
   .mutu-grid {
     display: grid;
@@ -393,14 +393,14 @@ const profilStyles = `
     border-radius: 50%;
     font-size: 1.4rem;
     font-weight: 900;
-    color: #fff;
+    color: var(--bg-white);
     margin: 0 auto .5rem;
   }
   .mutu-kata {
     font-size: .7rem;
     font-weight: 800;
     letter-spacing: .08em;
-    color: #d1fae5;
+    color: var(--primary-100);
     margin-bottom: .5rem;
   }
   .mutu-desc { font-size: .73rem; color: rgba(255,255,255,.75); line-height: 1.4; }
@@ -410,10 +410,10 @@ const profilStyles = `
     display: flex;
     align-items: center;
     gap: 2rem;
-    background: linear-gradient(120deg, #ecfdf5, #f0fdf4);
+    background: linear-gradient(120deg, var(--primary-lightest), var(--primary-lightest));
     border-radius: 16px;
     padding: 2rem 2.2rem;
-    border: 2px solid #d1fae5;
+    border: 2px solid var(--primary-100);
     margin-top: 1.2rem;
   }
   .ketua-pw-avatar { position: relative; flex-shrink: 0; }
@@ -421,8 +421,8 @@ const profilStyles = `
     position: absolute;
     bottom: -6px; left: 50%;
     transform: translateX(-50%);
-    background: #059669;
-    color: #fff;
+    background: var(--primary-600);
+    color: var(--bg-white);
     font-size: .68rem;
     font-weight: 700;
     letter-spacing: .06em;
@@ -434,16 +434,16 @@ const profilStyles = `
   .ketua-pw-nama {
     font-size: 1.3rem;
     font-weight: 800;
-    color: #064e3b;
+    color: var(--primary-900);
     margin-bottom: .2rem;
   }
   .ketua-pw-jabatan {
     font-size: .85rem;
-    color: #059669;
+    color: var(--primary-600);
     font-weight: 600;
     margin-bottom: .8rem;
   }
-  .ketua-pw-desc { font-size: .88rem; color: #555; line-height: 1.6; margin: 0; }
+  .ketua-pw-desc { font-size: .88rem; color: var(--text-muted); line-height: 1.6; margin: 0; }
 
   /* ---- Pengurus Grid ---- */
   .pengurus-grid {
@@ -453,12 +453,12 @@ const profilStyles = `
     margin-top: 1.5rem;
   }
   .pengurus-card {
-    background: #fff;
+    background: var(--bg-white);
     border-radius: 16px;
     padding: 1.8rem 1.3rem;
     text-align: center;
     box-shadow: 0 4px 16px rgba(0,0,0,.07);
-    border: 1px solid #ecfdf5;
+    border: 1px solid var(--primary-lightest);
     transition: transform .2s, box-shadow .2s;
   }
   .pengurus-card:hover {
@@ -473,14 +473,14 @@ const profilStyles = `
   .pengurus-nama {
     font-size: 1rem;
     font-weight: 700;
-    color: #064e3b;
+    color: var(--primary-900);
     margin-bottom: .3rem;
   }
   .pengurus-jabatan {
     font-size: .78rem;
-    color: #666;
+    color: var(--text-muted);
     font-weight: 600;
-    background: #ecfdf5;
+    background: var(--primary-lightest);
     display: inline-block;
     padding: .2rem .8rem;
     border-radius: 50px;
@@ -488,7 +488,7 @@ const profilStyles = `
   }
   .pengurus-desc {
     font-size: .8rem;
-    color: #777;
+    color: var(--text-muted);
     line-height: 1.55;
     margin: 0;
   }
@@ -499,7 +499,7 @@ const profilStyles = `
     .profil-sidebar { width: 100%; position: static; }
     .sidebar-nav { display: flex; }
     .sidebar-link { flex: 1; text-align: center; border-left: none; border-bottom: 3px solid transparent; }
-    .sidebar-link.active { border-bottom-color: #10b981; border-left: none; }
+    .sidebar-link.active { border-bottom-color: var(--primary); border-left: none; }
     .profil-stats-grid { grid-template-columns: repeat(2, 1fr); }
     .timeline-line { display: none; }
     .timeline-item { width: 100%; left: 0 !important; text-align: left; padding: 0 0 1.5rem 2rem; }

@@ -15,9 +15,9 @@ const AvatarPlaceholder = ({ size = 96 }) => (
         style={{ borderRadius: '50%' }}
         aria-label="Foto pengurus"
     >
-        <rect width="100" height="100" fill="#ecfdf5" />
-        <circle cx="50" cy="38" r="18" fill="#34d399" />
-        <ellipse cx="50" cy="80" rx="28" ry="20" fill="#34d399" />
+        <rect width="100" height="100" fill="var(--primary-lightest)" />
+        <circle cx="50" cy="38" r="18" fill="var(--primary-400)" />
+        <ellipse cx="50" cy="80" rx="28" ry="20" fill="var(--primary-400)" />
     </svg>
 );
 

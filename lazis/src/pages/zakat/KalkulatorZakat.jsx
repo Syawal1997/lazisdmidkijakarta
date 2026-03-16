@@ -1,25 +1,77 @@
 /**
  * KalkulatorZakat.jsx
- * Kalkulator zakat interaktif + opsi pembayaran QRIS / Transfer + konfirmasi WhatsApp
- * Terinspirasi nucare.id/kalkulator-zakat, dimodifikasi untuk Lazis DMI DKI Jakarta
+ * Fitur interaktif untuk menghitung berbagai jenis zakat sesuai syariat.
+ * Dilengkapi dengan input otomatis pemisah ribuan dan integrasi pembayaran.
  */
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
-// ── Data jenis zakat & field kalkulatornya ──────────────────────────────────
+/**
+ * Konstanta Harga Emas saat ini sebagai acuan perhitungan nisab.
+ * Dapat diubah secara manual atau ditarik dari API di masa depan.
+ */
+const GOLD_PRICE = 1400000; 
+
+/**
+ * Fungsi untuk memformat angka ke dalam format Rupiah (IDR).
+ * Contoh: 1000000 -> Rp 1.000.000
+ */
+const formatRp = (n) =>
+    new Intl.NumberFormat('id-ID', { 
+        style: 'currency', 
+        currency: 'IDR', 
+        maximumFractionDigits: 0 
+    }).format(n).replace('Rp', 'Rp ');
+
+/**
+ * Fungsi pembantu untuk memformat tampilan angka dengan titik pemisah ribuan.
+ */
+const formatNumber = (val) => {
+    if (!val && val !== 0) return '';
+    return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+};
+
+/**
+ * Komponen Input Khusus yang menangani pemformatan angka ribuan secara real-time.
+ * Mencegah user memasukkan karakter non-angka dan memudahkan pembacaan nominal besar.
+ */
+const NumericInput = ({ label, value, onChange, placeholder }) => (
+    <div className="kz-input-group">
+        <label>{label}</label>
+        <div className="input-wrapper">
+            <span className="input-prefix">Rp</span>
+            <input
+                type="text"
+                className="kz-input"
+                placeholder={placeholder}
+                value={formatNumber(value)}
+                onChange={(e) => {
+                    const raw = e.target.value.replace(/\D/g, '');
+                    onChange(raw ? parseInt(raw, 10) : 0);
+                }}
+            />
+        </div>
+    </div>
+);
+
+/**
+ * Definisi Logika Perhitungan untuk setiap jenis Zakat.
+ * Setiap objek mengandung nisab, kadar (persentase), dan fungsi hitung khusus.
+ */
 const JENIS_ZAKAT = [
     {
         id: 'profesi',
         label: 'Zakat Profesi',
         icon: '👔',
-        nisabLabel: 'Nisab: Rp 6.725.000/bln (85 gr emas × harga emas)',
+        getNisab: () => (85 * GOLD_PRICE) / 12,
+        getNisabLabel: () => `Nisab: ${formatRp((85 * GOLD_PRICE) / 12)}/bln (85 gr emas/12)`,
         kadar: 0.025,
         fields: [
-            { id: 'gaji', label: 'Gaji / Penghasilan per Bulan (Rp)', placeholder: 'Contoh: 8000000' },
-            { id: 'penghasilan_lain', label: 'Penghasilan Lain per Bulan (Rp)', placeholder: 'Contoh: 2000000' },
+            { id: 'gaji', label: 'Gaji / Penghasilan per Bulan', placeholder: '0' },
+            { id: 'penghasilan_lain', label: 'Penghasilan Lain per Bulan', placeholder: '0' },
         ],
-        hitung: (f) => {
-            const total = (Number(f.gaji) || 0) + (Number(f.penghasilan_lain) || 0);
-            const nisab = 6725000;
+        hitung: (f, nisab) => {
+            const total = (f.gaji || 0) + (f.penghasilan_lain || 0);
             return total >= nisab ? { total, zakat: total * 0.025, nisab, lolos: true } : { total, nisab, lolos: false };
         },
     },
@@ -27,108 +79,85 @@ const JENIS_ZAKAT = [
         id: 'mal',
         label: 'Zakat Mal / Tabungan',
         icon: '💰',
-        nisabLabel: 'Nisab: Rp 161.500.000 (85 gr emas), kepemilikan ≥ 1 tahun',
+        getNisab: () => 85 * GOLD_PRICE,
+        getNisabLabel: () => `Nisab: ${formatRp(85 * GOLD_PRICE)} (85 gr emas)`,
         kadar: 0.025,
         fields: [
-            { id: 'tabungan', label: 'Total Tabungan & Deposito (Rp)', placeholder: 'Contoh: 200000000' },
-            { id: 'investasi', label: 'Nilai Investasi (Rp)', placeholder: 'Contoh: 50000000' },
-            { id: 'utang', label: 'Utang Jangka Pendek (Rp)', placeholder: 'Contoh: 10000000' },
+            { id: 'tabungan', label: 'Total Tabungan & Deposito', placeholder: '0' },
+            { id: 'investasi', label: 'Nilai Investasi (Saham/Emas/Lainnya)', placeholder: '0' },
+            { id: 'utang', label: 'Utang Jangka Pendek (Jatuh Tempo)', placeholder: '0' },
         ],
-        hitung: (f) => {
-            const total = (Number(f.tabungan) || 0) + (Number(f.investasi) || 0) - (Number(f.utang) || 0);
-            const nisab = 161500000;
+        hitung: (f, nisab) => {
+            const total = (f.tabungan || 0) + (f.investasi || 0) - (f.utang || 0);
             return total >= nisab ? { total, zakat: total * 0.025, nisab, lolos: true } : { total, nisab, lolos: false };
         },
     },
+    // ... jenis zakat lainnya memiliki struktur serupa
     {
         id: 'emas',
-        label: 'Zakat Emas & Perak',
+        label: 'Zakat Emas',
         icon: '💍',
-        nisabLabel: 'Nisab: 85 gram emas yang disimpan ≥ 1 tahun',
+        getNisab: () => 85,
+        getNisabLabel: () => `Nisab: 85 gram emas yang disimpan ≥ 1 tahun`,
         kadar: 0.025,
         fields: [
-            { id: 'berat_emas', label: 'Berat Emas yang Disimpan (gram)', placeholder: 'Contoh: 100' },
-            { id: 'harga_emas', label: 'Harga Emas per Gram (Rp)', placeholder: 'Contoh: 1900000' },
+            { id: 'berat_emas', label: 'Berat Emas yang Disimpan (gram)', placeholder: '0', isGram: true },
+            { id: 'harga_emas', label: 'Harga Emas saat ini (per gram)', placeholder: formatNumber(GOLD_PRICE), defaultValue: GOLD_PRICE },
         ],
-        hitung: (f) => {
-            const berat = Number(f.berat_emas) || 0;
-            const harga = Number(f.harga_emas) || 1900000;
+        hitung: (f, nisab) => {
+            const berat = f.berat_emas || 0;
+            const harga = f.harga_emas || GOLD_PRICE;
             const total = berat * harga;
-            const nisab = 85 * harga;
-            return berat >= 85 ? { total, zakat: total * 0.025, nisab, lolos: true } : { total, nisab, lolos: false };
+            const nisabRp = nisab * harga;
+            return berat >= nisab ? { total, zakat: total * 0.025, nisab: nisabRp, lolos: true } : { total, nisab: nisabRp, lolos: false };
         },
     },
     {
         id: 'perdagangan',
         label: 'Zakat Perdagangan',
         icon: '🛒',
-        nisabLabel: 'Nisab: Rp 161.500.000, kadar 2,5% dari aset bersih',
+        getNisab: () => 85 * GOLD_PRICE,
+        getNisabLabel: () => `Nisab: ${formatRp(85 * GOLD_PRICE)} (Setara 85 gr emas)`,
         kadar: 0.025,
         fields: [
-            { id: 'stok', label: 'Nilai Stok Barang (Rp)', placeholder: 'Contoh: 100000000' },
-            { id: 'piutang', label: 'Piutang Lancar (Rp)', placeholder: 'Contoh: 30000000' },
-            { id: 'kas', label: 'Kas & Setara Kas (Rp)', placeholder: 'Contoh: 50000000' },
-            { id: 'utang_dag', label: 'Utang Dagang (Rp)', placeholder: 'Contoh: 20000000' },
+            { id: 'stok', label: 'Nilai Stok Barang Dagangan', placeholder: '0' },
+            { id: 'piutang', label: 'Piutang Lancar', placeholder: '0' },
+            { id: 'kas', label: 'Kas & Setara Kas (Uang Tunai Usaha)', placeholder: '0' },
+            { id: 'utang_dag', label: 'Utang Dagang (Jatuh Tempo)', placeholder: '0' },
         ],
-        hitung: (f) => {
-            const total = (Number(f.stok) || 0) + (Number(f.piutang) || 0) + (Number(f.kas) || 0) - (Number(f.utang_dag) || 0);
-            const nisab = 161500000;
+        hitung: (f, nisab) => {
+            const total = (f.stok || 0) + (f.piutang || 0) + (f.kas || 0) - (f.utang_dag || 0);
             return total >= nisab ? { total, zakat: total * 0.025, nisab, lolos: true } : { total, nisab, lolos: false };
-        },
-    },
-    {
-        id: 'pertanian',
-        label: 'Zakat Pertanian',
-        icon: '🌾',
-        nisabLabel: 'Nisab: 653 kg beras. Kadar: 5% (irigasi berbayar) / 10% (hujan)',
-        kadar: 0.05,
-        fields: [
-            { id: 'hasil_panen', label: 'Hasil Panen (kg)', placeholder: 'Contoh: 1000' },
-            { id: 'harga_kg', label: 'Harga per Kg (Rp)', placeholder: 'Contoh: 12000' },
-            { id: 'irigasi_bayar', label: 'Menggunakan Irigasi Berbayar? (1=Ya, 0=Tdk)', placeholder: '1 atau 0' },
-        ],
-        hitung: (f) => {
-            const hasil = Number(f.hasil_panen) || 0;
-            const harga = Number(f.harga_kg) || 12000;
-            const total = hasil * harga;
-            const nisab = 653 * harga;
-            const kadar = Number(f.irigasi_bayar) === 1 ? 0.05 : 0.1;
-            return hasil >= 653 ? { total, zakat: total * kadar, nisab, lolos: true } : { total, nisab, lolos: false };
         },
     },
     {
         id: 'fitrah',
         label: 'Zakat Fitrah',
         icon: '🌙',
-        nisabLabel: 'Wajib bagi setiap Muslim di bulan Ramadan. Kadar: 2,5 kg beras per jiwa.',
+        getNisab: () => 0,
+        getNisabLabel: () => 'Wajib bagi setiap Muslim di bulan Ramadan.',
         kadar: null,
         fields: [
-            { id: 'jiwa', label: 'Jumlah Jiwa yang Ditanggung', placeholder: 'Contoh: 4' },
-            { id: 'harga_brs', label: 'Harga Beras per Kg (Rp)', placeholder: 'Contoh: 14000' },
+            { id: 'jiwa', label: 'Jumlah Jiwa yang Ditanggung', placeholder: '1', isJiwa: true },
+            { id: 'harga_brs', label: 'Harga Beras per Kg / Jiwa (Standar)', placeholder: '45.000', defaultValue: 45000 },
         ],
         hitung: (f) => {
-            const jiwa = Number(f.jiwa) || 1;
-            const harga = Number(f.harga_brs) || 14000;
-            const zakat = jiwa * 2.5 * harga;
+            const jiwa = f.jiwa || 0;
+            const harga = f.harga_brs || 45000;
+            const zakat = jiwa * harga;
             return { total: jiwa, zakat, nisab: 0, lolos: true };
         },
     },
 ];
 
-// ── Helper format Rupiah ────────────────────────────────────────────────────
-const formatRp = (n) =>
-    new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(n);
-
-// ── Komponen utama ──────────────────────────────────────────────────────────
 const KalkulatorZakat = () => {
     const [selectedJenis, setSelectedJenis] = useState(JENIS_ZAKAT[0]);
     const [fields, setFields] = useState({});
     const [hasil, setHasil] = useState(null);
     const [showPayment, setShowPayment] = useState(false);
-    const [metode, setMetode] = useState('qris'); // 'qris' | 'transfer'
+    const [metode, setMetode] = useState('qris'); 
     const [namaDonatur, setNamaDonatur] = useState('');
 
-    // Ganti jenis zakat → reset form
     const handleJenisChange = useCallback((jenis) => {
         setSelectedJenis(jenis);
         setFields({});
@@ -136,16 +165,15 @@ const KalkulatorZakat = () => {
         setShowPayment(false);
     }, []);
 
-    // Hitung zakat
     const handleHitung = () => {
-        const res = selectedJenis.hitung(fields);
+        const nisab = selectedJenis.getNisab();
+        const res = selectedJenis.hitung(fields, nisab);
         setHasil(res);
         setShowPayment(false);
     };
 
-    // Konfirmasi via WhatsApp
     const handleKonfirmasiWA = () => {
-        const nomorWA = '6282117460200'; // Ganti dengan nomor WA Lazis DMI DKI
+        const nomorWA = '6282117460200';
         const zakatText = hasil ? formatRp(hasil.zakat) : '-';
         const msg = encodeURIComponent(
             `Assalamualaikum, saya ingin mengkonfirmasi pembayaran zakat:\n\n` +
@@ -161,311 +189,265 @@ const KalkulatorZakat = () => {
     return (
         <div className="kz-page">
             <style>{`
-        .kz-page { font-family: 'Segoe UI', sans-serif; background: #f9fafb; min-height: 100vh; }
-
-        /* ── Hero ── */
+        .kz-page { background: var(--bg-body); min-height: 100vh; padding-top: 5rem; }
         .kz-hero {
-          background: linear-gradient(135deg, #065f46, #059669 55%, #10b981);
-          padding: 6rem 0 3rem; text-align: center; color: #fff;
+          background: linear-gradient(135deg, var(--primary-900), var(--primary-600));
+          padding: 4rem 0; text-align: center; color: var(--bg-white);
         }
-        .kz-hero-badge {
-          display: inline-block; background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.3);
-          font-size: .75rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
-          padding: .3rem .9rem; border-radius: 50px; margin-bottom: 1rem;
+        .kz-hero h1 { font-size: 2.5rem; font-weight: 800; margin-bottom: 0.5rem; }
+        .kz-hero p { opacity: 0.9; max-width: 600px; margin: 0 auto; font-size: 1.1rem; }
+        
+        .kz-main { 
+          max-width: 1100px; margin: -3rem auto 0; padding: 0 1rem 4rem; 
+          display: grid; grid-template-columns: 280px 1fr; gap: 2rem; 
         }
-        .kz-hero h1 { font-size: 2.4rem; font-weight: 900; margin: 0 0 .6rem; }
-        .kz-hero p  { opacity: .85; font-size: .95rem; margin: 0; }
 
-        /* ── Main Layout ── */
-        .kz-main { max-width: 1100px; margin: -2rem auto 0; padding: 0 1.5rem 4rem; display: grid; grid-template-columns: 280px 1fr; gap: 1.8rem; align-items: start; }
-
-        /* ── Jenis Sidebar ── */
-        .kz-jenis-panel { background: #fff; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,.08); overflow: hidden; position: sticky; top: 90px; }
-        .kz-jenis-header { background: linear-gradient(135deg, #065f46, #059669); color: #fff; padding: 1rem 1.3rem; font-size: .9rem; font-weight: 700; }
+        .kz-sidebar {
+          background: white; border-radius: 1.25rem; box-shadow: var(--shadow-lg);
+          padding: 1.25rem; position: sticky; top: 100px; height: fit-content;
+          border: 1px solid var(--border-color);
+        }
         .kz-jenis-btn {
-          display: flex; align-items: center; gap: .7rem; width: 100%; text-align: left;
-          padding: .75rem 1.2rem; border: none; background: none; cursor: pointer;
-          font-size: .85rem; color: #444; border-left: 3px solid transparent; transition: all .15s;
+          display: flex; align-items: center; gap: 0.75rem; width: 100%;
+          padding: 0.875rem 1rem; border: none; background: none; border-radius: 0.75rem;
+          color: var(--text-muted); font-weight: 600; transition: all 0.2s; text-align: left;
+          font-size: 0.95rem;
         }
-        .kz-jenis-btn:hover  { background: #f0fdf4; color: #059669; border-left-color: #34d399; }
-        .kz-jenis-btn.active { background: #ecfdf5; color: #064e3b; font-weight: 700; border-left-color: #10b981; }
-        .kz-jenis-btn-icon   { font-size: 1.1rem; flex-shrink: 0; }
+        .kz-jenis-btn:hover { background: var(--primary-50); color: var(--primary); }
+        .kz-jenis-btn.active { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); }
 
-        /* ── Calculator Card ── */
-        .kz-calc-card { background: #fff; border-radius: 18px; box-shadow: 0 4px 20px rgba(0,0,0,.08); overflow: hidden; }
-        .kz-calc-header { background: linear-gradient(135deg, #059669, #10b981); padding: 1.5rem 2rem; color: #fff; }
-        .kz-calc-header h2 { font-size: 1.25rem; font-weight: 800; margin: 0 0 .3rem; }
-        .kz-calc-header p  { font-size: .82rem; opacity: .85; margin: 0; }
-        .kz-calc-body { padding: 1.8rem 2rem; }
-
-        /* ── Form Fields ── */
-        .kz-field { margin-bottom: 1.2rem; }
-        .kz-label { display: block; font-size: .83rem; font-weight: 600; color: #374737; margin-bottom: .4rem; }
+        .kz-content {
+          background: white; border-radius: 1.25rem; box-shadow: var(--shadow-lg);
+          overflow: hidden; border: 1px solid var(--border-color);
+        }
+        .kz-content-header {
+          background: linear-gradient(to right, var(--primary-50), white); 
+          padding: 2.5rem; border-bottom: 1px solid var(--border-color);
+        }
+        .kz-content-body { padding: 2.5rem; }
+        
+        .kz-input-group { margin-bottom: 1.5rem; }
+        .kz-input-group label { display: block; font-weight: 700; margin-bottom: 0.625rem; font-size: 0.9rem; color: var(--text-main); }
+        
+        .input-wrapper {
+            position: relative; display: flex; align-items: center;
+        }
+        .input-prefix {
+            position: absolute; left: 1rem; font-weight: 600; color: var(--text-muted);
+        }
         .kz-input {
-          width: 100%; padding: .65rem 1rem; border: 2px solid #e0e0e0; border-radius: 10px;
-          font-size: .9rem; transition: border-color .2s; outline: none; box-sizing: border-box;
+          width: 100%; padding: 0.875rem 1rem 0.875rem 3rem; border: 1.5px solid var(--border-color);
+          border-radius: 0.75rem; outline: none; transition: all 0.2s; font-weight: 600;
         }
-        .kz-input:focus { border-color: #10b981; }
-        .kz-btn-hitung {
-          width: 100%; padding: .9rem; background: linear-gradient(135deg, #059669, #10b981);
-          color: #fff; border: none; border-radius: 12px; font-size: 1rem; font-weight: 700;
-          cursor: pointer; transition: opacity .2s, transform .2s;
-        }
-        .kz-btn-hitung:hover { opacity: .9; transform: translateY(-1px); }
+        .kz-input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px var(--primary-100); }
+        
+        /* Gram input exception */
+        .no-prefix .kz-input { padding-left: 1rem; }
 
-        /* ── Hasil ── */
-        .kz-hasil { margin-top: 1.5rem; border-radius: 14px; overflow: hidden; }
-        .kz-hasil-lolos { background: linear-gradient(120deg, #ecfdf5, #f0fdf4); border: 2px solid #34d399; border-radius: 14px; padding: 1.5rem; }
-        .kz-hasil-gagal { background: #fff8e1; border: 2px solid #ffe082; border-radius: 14px; padding: 1.5rem; }
-        .kz-hasil-label { font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: #047857; margin-bottom: .5rem; }
-        .kz-hasil-amount { font-size: 2rem; font-weight: 900; color: #064e3b; margin: 0 0 .3rem; }
-        .kz-hasil-sub   { font-size: .82rem; color: #666; margin: 0; }
-        .kz-hasil-gagal-title { font-weight: 700; color: #e65100; margin-bottom: .3rem; }
-        .kz-btn-bayar {
-          width: 100%; margin-top: 1.1rem; padding: .85rem; background: #059669;
-          color: #fff; border: none; border-radius: 12px; font-size: .95rem; font-weight: 700;
-          cursor: pointer; transition: background .2s;
+        .kz-result-box {
+          margin-top: 2.5rem; padding: 2.5rem; border-radius: 1.25rem;
+          background: var(--primary-50); border: 2px dashed var(--primary-300);
+          text-align: center;
         }
-        .kz-btn-bayar:hover { background: #064e3b; }
+        
+        .kz-payment-card {
+            border: 1px solid var(--border-color); border-radius: 1rem;
+            padding: 1.25rem; transition: all 0.2s; cursor: pointer;
+            display: flex; align-items: center; gap: 1rem;
+        }
+        .kz-payment-card:hover { border-color: var(--primary); background: var(--primary-50); }
+        .kz-payment-card.active { border-color: var(--primary); background: var(--primary-50); ring: 2px var(--primary); }
 
-        /* ── Payment Modal Area ── */
-        .kz-payment { margin-top: 1.5rem; background: #fff; border: 2px solid #ecfdf5; border-radius: 16px; padding: 1.5rem; }
-        .kz-payment h3 { font-size: 1rem; font-weight: 800; color: #064e3b; margin: 0 0 1rem; }
-        .kz-metode-tabs { display: flex; gap: .6rem; margin-bottom: 1.3rem; }
-        .kz-tab {
-          flex: 1; padding: .6rem; border: 2px solid #e0e0e0; border-radius: 10px;
-          background: #fff; cursor: pointer; font-size: .83rem; font-weight: 600; color: #666;
-          transition: all .15s; text-align: center;
-        }
-        .kz-tab.active { border-color: #10b981; background: #ecfdf5; color: #064e3b; }
-
-        /* QRIS Display */
-        .kz-qris-box { text-align: center; padding: 1rem 0; }
-        .kz-qris-img {
-          width: 200px; height: 200px; border: 3px solid #d1fae5; border-radius: 12px;
-          margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center;
-          background: #f0fdf4; font-size: 4rem;
-        }
-        .kz-qris-label { font-size: .85rem; font-weight: 700; color: #064e3b; margin-bottom: .3rem; }
-        .kz-qris-sub   { font-size: .78rem; color: #666; }
-
-        /* Transfer Display */
-        .kz-rek-list { display: flex; flex-direction: column; gap: .8rem; margin-bottom: 1rem; }
-        .kz-rek-item {
-          display: flex; align-items: center; gap: 1rem; background: #f0fdf4;
-          border: 1px solid #d1fae5; border-radius: 10px; padding: .9rem 1.1rem;
-        }
-        .kz-rek-bank { font-size: .75rem; font-weight: 800; color: #047857; min-width: 40px; }
-        .kz-rek-detail { flex: 1; }
-        .kz-rek-no    { font-size: .95rem; font-weight: 700; color: #064e3b; letter-spacing: .05em; }
-        .kz-rek-an    { font-size: .75rem; color: #666; }
-
-        /* Nama & Konfirmasi */
-        .kz-nama-field { margin: 1rem 0; }
-        .kz-btn-wa {
-          width: 100%; padding: .85rem; background: #10b981;
-          color: #fff; border: none; border-radius: 12px; font-size: .9rem; font-weight: 700;
-          cursor: pointer; display: flex; align-items: center; justify-content: center; gap: .5rem;
-          transition: background .2s;
-        }
-        .kz-btn-wa:hover { background: #059669; }
-
-        /* ── Why Grid ── */
-        .kz-why { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem 4rem; }
-        .kz-why-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1.1rem; margin-top: 1.5rem; }
-        .kz-why-card {
-          background: #fff; border-radius: 14px; padding: 1.4rem 1.2rem; text-align: center;
-          box-shadow: 0 2px 12px rgba(0,0,0,.06); border-top: 3px solid #10b981;
-        }
-        .kz-why-icon  { font-size: 2rem; margin-bottom: .6rem; }
-        .kz-why-title { font-size: .88rem; font-weight: 700; color: #064e3b; margin: 0 0 .4rem; }
-        .kz-why-desc  { font-size: .78rem; color: #666; line-height: 1.5; margin: 0; }
-
-        /* ── Responsive ── */
-        @media (max-width: 860px) {
-          .kz-main { grid-template-columns: 1fr; }
-          .kz-jenis-panel { position: static; }
-          .kz-why-grid { grid-template-columns: 1fr 1fr; }
-        }
-        @media (max-width: 480px) {
-          .kz-why-grid { grid-template-columns: 1fr; }
-          .kz-calc-body { padding: 1.2rem; }
+        @media (max-width: 992px) {
+          .kz-main { grid-template-columns: 1fr; margin-top: 1rem; }
+          .kz-sidebar { position: static; }
+          .kz-content-header, .kz-content-body { padding: 1.5rem; }
         }
       `}</style>
 
-            {/* ── Hero ── */}
             <div className="kz-hero">
-                <span className="kz-hero-badge">Kalkulator Zakat</span>
-                <h1>Hitung Zakat Anda dengan Mudah</h1>
-                <p>Kalkulasikan kewajiban zakat Anda secara akurat, lalu bayar langsung melalui QRIS atau transfer bank</p>
+                <div className="container">
+                    <motion.h1 
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                    >Kalkulator Zakat</motion.h1>
+                    <motion.p
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.2 }}
+                    >Hitung kewajiban ZISWAF Anda dengan parameter terbaru sesuai syariat.</motion.p>
+                </div>
             </div>
 
-            {/* ── Main ── */}
             <div className="kz-main">
-
-                {/* Sidebar Jenis Zakat */}
-                <aside className="kz-jenis-panel">
-                    <div className="kz-jenis-header">📋 Pilih Jenis Zakat</div>
-                    {JENIS_ZAKAT.map((j) => (
-                        <button
-                            key={j.id}
-                            className={`kz-jenis-btn${selectedJenis.id === j.id ? ' active' : ''}`}
-                            onClick={() => handleJenisChange(j)}
-                        >
-                            <span className="kz-jenis-btn-icon">{j.icon}</span>
-                            {j.label}
-                        </button>
-                    ))}
+                <aside className="kz-sidebar">
+                    <h6 className="fw-bold mb-3 px-2 text-uppercase small text-muted letter-spacing-1">Pilih Jenis Zakat</h6>
+                    <div className="d-flex flex-column gap-1">
+                        {JENIS_ZAKAT.map((j) => (
+                            <button
+                                key={j.id}
+                                className={`kz-jenis-btn ${selectedJenis.id === j.id ? 'active' : ''}`}
+                                onClick={() => handleJenisChange(j)}
+                            >
+                                <span className="fs-5">{j.icon}</span> {j.label}
+                            </button>
+                        ))}
+                    </div>
+                    <div className="mt-4 p-3 bg-light rounded-3 small">
+                        <p className="mb-1 fw-bold text-success">Info Harga Emas</p>
+                        <p className="mb-0 text-muted">Standar harga emas saat ini: <br/><b>{formatRp(GOLD_PRICE)}/gram</b></p>
+                    </div>
                 </aside>
 
-                {/* Calculator */}
-                <div>
-                    <div className="kz-calc-card">
-                        <div className="kz-calc-header">
-                            <h2>{selectedJenis.icon} {selectedJenis.label}</h2>
-                            <p>{selectedJenis.nisabLabel}</p>
-                        </div>
-                        <div className="kz-calc-body">
-                            {selectedJenis.fields.map((f) => (
-                                <div key={f.id} className="kz-field">
-                                    <label className="kz-label">{f.label}</label>
-                                    <input
-                                        id={`kz-${f.id}`}
-                                        type="number"
-                                        className="kz-input"
-                                        placeholder={f.placeholder}
-                                        value={fields[f.id] || ''}
-                                        onChange={(e) => setFields((prev) => ({ ...prev, [f.id]: e.target.value }))}
-                                    />
+                <main className="kz-content">
+                    <AnimatePresence mode="wait">
+                        <motion.div 
+                            key={selectedJenis.id}
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: -20 }}
+                            transition={{ duration: 0.3 }}
+                        >
+                            <div className="kz-content-header">
+                                <h3 className="fw-bold mb-2">{selectedJenis.icon} {selectedJenis.label}</h3>
+                                <p className="text-muted mb-0">{selectedJenis.getNisabLabel()}</p>
+                            </div>
+                            <div className="kz-content-body">
+                                <div className="row">
+                                    {selectedJenis.fields.map((f) => (
+                                        <div key={f.id} className={`col-md-6 ${f.isGram || f.isJiwa ? 'no-prefix' : ''}`}>
+                                            {f.isGram || f.isJiwa ? (
+                                                <div className="kz-input-group">
+                                                    <label>{f.label}</label>
+                                                    <input
+                                                        type="number"
+                                                        className="kz-input"
+                                                        placeholder={f.placeholder}
+                                                        value={fields[f.id] || ''}
+                                                        onChange={(e) => setFields((prev) => ({ ...prev, [f.id]: parseInt(e.target.value, 10) || 0 }))}
+                                                    />
+                                                </div>
+                                            ) : (
+                                                <NumericInput
+                                                    label={f.label}
+                                                    placeholder={f.placeholder}
+                                                    value={fields[f.id] || 0}
+                                                    onChange={(val) => setFields((prev) => ({ ...prev, [f.id]: val }))}
+                                                />
+                                            )}
+                                        </div>
+                                    ))}
                                 </div>
-                            ))}
-                            <button className="kz-btn-hitung" onClick={handleHitung}>
-                                🧮 Hitung Zakat Saya
-                            </button>
+                                <button className="btn btn-success btn-lg w-100 mt-2 py-3 fw-bold shadow-sm rounded-3" onClick={handleHitung}>
+                                    Mulai Hitung
+                                </button>
 
-                            {/* Hasil */}
-                            {hasil && (
-                                <div className="kz-hasil">
-                                    {hasil.lolos ? (
-                                        <div className="kz-hasil-lolos">
-                                            <div className="kz-hasil-label">Zakat yang Wajib Anda Tunaikan</div>
-                                            <div className="kz-hasil-amount">{formatRp(hasil.zakat)}</div>
-                                            <p className="kz-hasil-sub">
-                                                {selectedJenis.kadar
-                                                    ? `(${selectedJenis.kadar * 100}% × ${formatRp(hasil.total)})`
-                                                    : `Berdasarkan data yang Anda masukkan`}
-                                            </p>
-                                            <button className="kz-btn-bayar" onClick={() => setShowPayment(true)}>
-                                                💳 Bayar Zakat Sekarang
-                                            </button>
-                                        </div>
-                                    ) : (
-                                        <div className="kz-hasil-gagal">
-                                            <div className="kz-hasil-gagal-title">⚠️ Belum Mencapai Nisab</div>
-                                            <p style={{ fontSize: '.83rem', color: '#555', margin: 0 }}>
-                                                Harta Anda ({formatRp(hasil.total)}) belum mencapai nisab ({formatRp(hasil.nisab)}).
-                                                Zakat belum wajib, namun Anda tetap dianjurkan bersedekah / berinfaq.
-                                            </p>
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-
-                            {/* Pembayaran */}
-                            {showPayment && hasil?.lolos && (
-                                <div className="kz-payment">
-                                    <h3>Pilih Metode Pembayaran</h3>
-
-                                    {/* Tabs */}
-                                    <div className="kz-metode-tabs">
-                                        <button className={`kz-tab${metode === 'qris' ? ' active' : ''}`} onClick={() => setMetode('qris')}>
-                                            📱 QRIS
-                                        </button>
-                                        <button className={`kz-tab${metode === 'transfer' ? ' active' : ''}`} onClick={() => setMetode('transfer')}>
-                                            🏦 Transfer Bank
-                                        </button>
-                                    </div>
-
-                                    {/* QRIS */}
-                                    {metode === 'qris' && (
-                                        <div className="kz-qris-box">
-                                            <div className="kz-qris-img">
-                                                {/* Placeholder QRIS — ganti dengan <img src="/qris-lazis-dmi.png" /> */}
-                                                🟩
+                                {hasil && (
+                                    <motion.div 
+                                        initial={{ opacity: 0, scale: 0.95 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        className={`kz-result-box ${!hasil.lolos ? 'bg-light border-secondary opacity-75' : ''}`}
+                                    >
+                                        {hasil.lolos ? (
+                                            <div>
+                                                <span className="text-muted small text-uppercase fw-bold letter-spacing-1">Kewajiban Zakat Anda</span>
+                                                <h1 className="display-4 fw-bold text-success my-2">{formatRp(hasil.zakat)}</h1>
+                                                <p className="text-muted mb-4">
+                                                    Total Harta: <b>{selectedJenis.id === 'fitrah' ? `${hasil.total} Jiwa` : formatRp(hasil.total)}</b>
+                                                </p>
+                                                <button className="btn btn-primary btn-lg px-5 py-3 rounded-pill shadow fw-bold" onClick={() => setShowPayment(true)}>
+                                                    Tunaikan Sekarang
+                                                </button>
                                             </div>
-                                            <div className="kz-qris-label">QRIS Lazis DMI DKI Jakarta</div>
-                                            <div className="kz-qris-sub">Scan dengan aplikasi dompet digital / m-banking Anda</div>
-                                            <div style={{ marginTop: '.6rem', fontSize: '.82rem', background: '#ecfdf5', padding: '.5rem .8rem', borderRadius: 8, color: '#059669', fontWeight: 600 }}>
-                                                Nominal: {formatRp(hasil.zakat)}
+                                        ) : (
+                                            <div className="py-2">
+                                                <h4 className="fw-bold text-dark mb-2">⚠️ Belum Mencapai Nisab</h4>
+                                                <p className="text-muted mb-0">Harta Anda ({formatRp(hasil.total)}) belum mencapai syarat minimal wajib zakat ({formatRp(hasil.nisab)}).</p>
+                                                <p className="small text-muted mt-3">Tetaplah berbagi melalui <b>Infaq & Shodaqoh</b> untuk keberkahan harta.</p>
                                             </div>
-                                        </div>
-                                    )}
+                                        )}
+                                    </motion.div>
+                                )}
 
-                                    {/* Transfer */}
-                                    {metode === 'transfer' && (
-                                        <div className="kz-rek-list">
-                                            {[
-                                                { bank: 'BSI', no: '700.1234.5678', an: 'Lazis DMI DKI Jakarta' },
-                                                { bank: 'BCA', no: '123.456.7890', an: 'Lazis DMI DKI Jakarta' },
-                                                { bank: 'Mandiri', no: '1230.0012.3456', an: 'Lazis DMI DKI Jakarta' },
-                                            ].map((r, i) => (
-                                                <div key={i} className="kz-rek-item">
-                                                    <div className="kz-rek-bank">{r.bank}</div>
-                                                    <div className="kz-rek-detail">
-                                                        <div className="kz-rek-no">{r.no}</div>
-                                                        <div className="kz-rek-an">a.n {r.an}</div>
+                                {showPayment && (
+                                    <motion.div 
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        className="mt-5 p-4 border rounded-4 bg-white shadow-sm"
+                                    >
+                                        <div className="d-flex align-items-center gap-3 mb-4">
+                                            <div className="bg-success bg-opacity-10 p-2 rounded-3">
+                                                <i className="fas fa-credit-card text-success"></i>
+                                            </div>
+                                            <h5 className="fw-bold mb-0">Pilih Metode Pembayaran</h5>
+                                        </div>
+                                        
+                                        <div className="row g-3 mb-4">
+                                            <div className="col-sm-6">
+                                                <div className={`kz-payment-card ${metode === 'qris' ? 'active' : ''}`} onClick={() => setMetode('qris')}>
+                                                    <i className="fas fa-qrcode fs-4 text-success"></i>
+                                                    <div>
+                                                        <p className="mb-0 fw-bold">QRIS</p>
+                                                        <small className="text-muted">E-Wallet & M-Banking</small>
                                                     </div>
                                                 </div>
-                                            ))}
-                                            <div style={{ fontSize: '.82rem', background: '#ecfdf5', padding: '.6rem 1rem', borderRadius: 8, color: '#059669', fontWeight: 600 }}>
-                                                Nominal Transfer: {formatRp(hasil.zakat)}
+                                            </div>
+                                            <div className="col-sm-6">
+                                                <div className={`kz-payment-card ${metode === 'transfer' ? 'active' : ''}`} onClick={() => setMetode('transfer')}>
+                                                    <i className="fas fa-university fs-4 text-success"></i>
+                                                    <div>
+                                                        <p className="mb-0 fw-bold">Transfer Bank</p>
+                                                        <small className="text-muted">BSI, DKI Syariah</small>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
-                                    )}
 
-                                    {/* Nama & Konfirmasi WA */}
-                                    <div className="kz-nama-field">
-                                        <label className="kz-label">Nama Anda (untuk konfirmasi)</label>
-                                        <input
-                                            id="kz-nama-donatur"
-                                            type="text"
-                                            className="kz-input"
-                                            placeholder="Masukkan nama lengkap Anda"
-                                            value={namaDonatur}
-                                            onChange={(e) => setNamaDonatur(e.target.value)}
-                                        />
-                                    </div>
-                                    <button className="kz-btn-wa" onClick={handleKonfirmasiWA}>
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.673.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" /></svg>
-                                        Konfirmasi Pembayaran via WhatsApp
-                                    </button>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                </div>
-            </div>
+                                        {metode === 'qris' ? (
+                                            <div className="text-center py-4 bg-light rounded-4 mb-4 border">
+                                                <div className="mx-auto bg-white p-3 shadow-sm rounded-4 mb-3" style={{ width: '220px', height: '220px' }}>
+                                                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=LazisDMI_Donation" alt="QRIS" className="w-100" />
+                                                </div>
+                                                <p className="fw-bold mb-0">Scan QRIS Resmi Lazis DMI</p>
+                                                <p className="small text-muted mb-0 px-3">Silakan scan dan masukkan nominal: <br/><span className="text-success fw-bold">{formatRp(hasil.zakat)}</span></p>
+                                            </div>
+                                        ) : (
+                                            <div className="mb-4 border rounded-4 overflow-hidden">
+                                                {[
+                                                    { bank: 'Bank BSI', no: '7123 4567 89', an: 'Lazis DMI DKI Jakarta' },
+                                                    { bank: 'Bank DKI Syariah', no: '123 45 67890', an: 'Lazis DMI DKI Jakarta' }
+                                                ].map((r, i) => (
+                                                    <div key={i} className="p-3 bg-white d-flex justify-content-between align-items-center border-bottom">
+                                                        <div>
+                                                            <div className="d-flex align-items-center gap-2 mb-1">
+                                                                <span className="badge bg-success bg-opacity-10 text-success small">{r.bank}</span>
+                                                            </div>
+                                                            <p className="mb-0 fw-bold fs-5">{r.no}</p>
+                                                            <small className="text-muted">a.n {r.an}</small>
+                                                        </div>
+                                                        <button className="btn btn-sm btn-outline-success px-3" onClick={() => navigator.clipboard.writeText(r.no.replace(/\s/g, ''))}>
+                                                            Salin
+                                                        </button>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
 
-            {/* ── Mengapa Zakat di Lazis DMI DKI ── */}
-            <div className="kz-why">
-                <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
-                    <div style={{ fontSize: '.75rem', fontWeight: 700, letterSpacing: '.1em', textTransform: 'uppercase', color: '#059669', marginBottom: '.3rem' }}>Keunggulan</div>
-                    <h2 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#064e3b', margin: 0 }}>Mengapa Bayar Zakat di Lazis DMI DKI?</h2>
-                </div>
-                <div className="kz-why-grid">
-                    {[
-                        { icon: '🛡️', judul: 'Terpercaya & Amanah', desc: 'Dikelola oleh lembaga resmi DMI DKI Jakarta yang telah berpengalaman, diawasi langsung oleh Pimpinan Wilayah DMI DKI.' },
-                        { icon: '🎯', judul: 'Tepat Sasaran', desc: 'Zakat disalurkan kepada 8 golongan yang berhak sesuai syariat Islam melalui verifikasi ketat. ' },
-                        { icon: '📊', judul: 'Transparan & Akuntabel', desc: 'Laporan keuangan dan data penyaluran zakat dapat diakses secara terbuka dan dipertanggungjawabkan.' },
-                        { icon: '🕌', judul: 'Berbasis Jaringan Masjid', desc: 'Bersinergi dengan ratusan masjid se-DKI Jakarta agar distribusi zakat merata dan dekat dengan mustahik.' },
-                    ].map((w, i) => (
-                        <div key={i} className="kz-why-card">
-                            <div className="kz-why-icon">{w.icon}</div>
-                            <div className="kz-why-title">{w.judul}</div>
-                            <p className="kz-why-desc">{w.desc}</p>
-                        </div>
-                    ))}
-                </div>
+                                        <div className="mb-4">
+                                            <label className="small fw-bold mb-2">Nama Muzakki (Opsional)</label>
+                                            <input type="text" className="form-control py-3 rounded-3 shadow-none border-2" style={{ borderColor: '#eee' }} placeholder="Hamba Allah" value={namaDonatur} onChange={(e) => setNamaDonatur(e.target.value)} />
+                                        </div>
+
+                                        <button className="btn btn-success w-100 py-3 rounded-3 fw-bold shadow d-flex align-items-center justify-content-center gap-2" onClick={handleKonfirmasiWA}>
+                                            <i className="fab fa-whatsapp fs-5"></i> Kirim Bukti Pembayaran
+                                        </button>
+                                        <p className="text-center small text-muted mt-3 mb-0">Klik tombol di atas untuk konfirmasi otomatis ke admin kami.</p>
+                                    </motion.div>
+                                )}
+                            </div>
+                        </motion.div>
+                    </AnimatePresence>
+                </main>
             </div>
         </div>
     );

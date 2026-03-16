@@ -2,13 +2,13 @@
 body {
   font-family: 'Inter', sans-serif;
   padding-top: 70px; /* Supaya konten tidak tertutup Navbar Fixed */
-  background-color: #f8f9fa;
+  background-color: var(--bg-body);
 }
 
 /* Kustomisasi Hero Section */
 .hero-section {
   min-height: 90vh;
-  background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%);
+  background: linear-gradient(135deg, var(--primary-50) 0%, var(--bg-white) 100%);
 }
 
 /* Efek Hover pada Kartu Program */
@@ -21,27 +21,27 @@ body {
   box-shadow: 0 1rem 3rem rgba(0,0,0,.1) !important;
 }
 
-/* Warna Hijau Khusus (Opsional, jika ingin menimpa hijau default Bootstrap) */
+/* Warna Hijau Khusus (Unifikasi dengan Emerald Palette) */
 .text-success {
-  color: #198754 !important; /* Hijau DMI */
+  color: var(--primary) !important;
 }
 
 .btn-success {
-  background-color: #198754;
-  border-color: #198754;
+  background-color: var(--primary);
+  border-color: var(--primary);
 }
 
 .btn-success:hover {
-  background-color: #157347;
-  border-color: #146c43;
+  background-color: var(--primary-dark);
+  border-color: var(--primary-dark);
 }
 
 .btn-outline-success {
-  color: #198754;
-  border-color: #198754;
+  color: var(--primary);
+  border-color: var(--primary);
 }
 
 .btn-outline-success:hover {
-  background-color: #198754;
+  background-color: var(--primary);
   color: white;
 }

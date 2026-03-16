@@ -7,7 +7,11 @@ import { useState } from 'react';
 
 // Format Rupiah
 const formatRp = (n) =>
-    new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(n);
+    new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        maximumFractionDigits: 0
+    }).format(n).replace('Rp', 'Rp ');
 
 // Pilihan nominal cepat
 const NOMINAL_CEPAT = [10000, 25000, 50000, 100000, 250000, 500000];
@@ -62,12 +66,12 @@ const InfaqShodaqoh = () => {
     return (
         <div className="is-page">
             <style>{`
-        .is-page { font-family: 'Segoe UI', sans-serif; background: #f9fafb; }
+        .is-page { font-family: 'Segoe UI', sans-serif; background: var(--bg-body); }
 
         /* ── Hero ── */
         .is-hero {
-          background: linear-gradient(135deg, #065f46 0%, #059669 55%, #10b981 100%);
-          padding: 7rem 0 5rem; text-align: center; color: #fff; position: relative; overflow: hidden;
+          background: linear-gradient(135deg, var(--primary-800) 0%, var(--primary-600) 55%, var(--primary) 100%);
+          padding: 7rem 0 5rem; text-align: center; color: var(--bg-white); position: relative; overflow: hidden;
         }
         .is-hero::before {
           content: '';
@@ -80,14 +84,14 @@ const InfaqShodaqoh = () => {
           padding: .35rem 1rem; border-radius: 50px; margin-bottom: 1rem;
         }
         .is-hero h1 { font-size: 2.6rem; font-weight: 900; margin: 0 0 .8rem; line-height: 1.15; }
-        .is-hero h1 span { color: #34d399; }
+        .is-hero h1 span { color: var(--primary-400); }
         .is-hero-desc { opacity: .85; font-size: .97rem; margin: 0 auto; max-width: 500px; line-height: 1.7; }
 
         /* ── Ayat Banner ── */
-        .is-ayat-strip { background: #ecfdf5; padding: 1.5rem; border-bottom: 1px solid #d1fae5; }
+        .is-ayat-strip { background: var(--primary-lightest); padding: 1.5rem; border-bottom: 1px solid var(--primary-100); }
         .is-ayat-inner { max-width: 860px; margin: 0 auto; text-align: center; }
-        .is-ayat-text  { font-style: italic; color: #065f46; font-size: .93rem; line-height: 1.7; margin: 0 0 .3rem; font-weight: 500; }
-        .is-ayat-ref   { font-size: .78rem; color: #059669; font-weight: 700; }
+        .is-ayat-text  { font-style: italic; color: var(--primary-800); font-size: .93rem; line-height: 1.7; margin: 0 0 .3rem; font-weight: 500; }
+        .is-ayat-ref   { font-size: .78rem; color: var(--primary-600); font-weight: 700; }
 
         /* ── Main Layout ── */
         .is-main { max-width: 1100px; margin: 0 auto; padding: 3rem 1.5rem 4rem; display: grid; grid-template-columns: 1fr 380px; gap: 2rem; align-items: start; }
@@ -95,111 +99,111 @@ const InfaqShodaqoh = () => {
         /* ── Kategori Grid ── */
         .is-kat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
         .is-kat-card {
-          background: #fff; border-radius: 14px; padding: 1.2rem; cursor: pointer;
-          border: 2px solid #e0e0e0; transition: all .2s; display: flex; flex-direction: column; gap: .4rem;
+          background: var(--bg-white); border-radius: 14px; padding: 1.2rem; cursor: pointer;
+          border: 2px solid var(--border-color); transition: all .2s; display: flex; flex-direction: column; gap: .4rem;
         }
-        .is-kat-card:hover     { border-color: #34d399; background: #f0fdf4; }
-        .is-kat-card.active    { border-color: #10b981; background: #ecfdf5; }
+        .is-kat-card:hover     { border-color: var(--primary-400); background: var(--primary-lightest); }
+        .is-kat-card.active    { border-color: var(--primary); background: var(--primary-lightest); }
         .is-kat-icon  { font-size: 1.6rem; }
-        .is-kat-label { font-size: .88rem; font-weight: 700; color: #065f46; }
-        .is-kat-desc  { font-size: .75rem; color: #666; line-height: 1.45; }
+        .is-kat-label { font-size: .88rem; font-weight: 700; color: var(--primary-800); }
+        .is-kat-desc  { font-size: .75rem; color: var(--text-muted); line-height: 1.45; }
         .is-kat-badge {
           display: inline-block; margin-top: auto;
           font-size: .65rem; font-weight: 700; padding: .2rem .6rem;
-          border-radius: 50px; background: #f0fdf4; color: #059669;
+          border-radius: 50px; background: var(--primary-lightest); color: var(--primary-600);
         }
-        .is-kat-card.active .is-kat-badge { background: #10b981; color: #fff; }
+        .is-kat-card.active .is-kat-badge { background: var(--primary); color: var(--bg-white); }
 
         /* ── Nominal Section ── */
-        .is-section-title { font-size: 1rem; font-weight: 700; color: #111827; margin: 0 0 .8rem; display: flex; align-items: center; gap: .5rem; }
+        .is-section-title { font-size: 1rem; font-weight: 700; color: var(--text-dark); margin: 0 0 .8rem; display: flex; align-items: center; gap: .5rem; }
         .is-nominal-chips { display: flex; flex-wrap: wrap; gap: .6rem; margin-bottom: 1rem; }
         .is-chip {
-          padding: .45rem 1rem; border: 2px solid #d1fae5; border-radius: 50px;
-          background: #fff; font-size: .83rem; font-weight: 600; cursor: pointer;
-          color: #059669; transition: all .15s;
+          padding: .45rem 1rem; border: 2px solid var(--primary-100); border-radius: 50px;
+          background: var(--bg-white); font-size: .83rem; font-weight: 600; cursor: pointer;
+          color: var(--primary-600); transition: all .15s;
         }
-        .is-chip:hover, .is-chip.active { background: #10b981; border-color: #10b981; color: #fff; }
+        .is-chip:hover, .is-chip.active { background: var(--primary); border-color: var(--primary); color: var(--bg-white); }
         .is-input {
-          width: 100%; padding: .7rem 1rem; border: 2px solid #e0e0e0; border-radius: 10px;
+          width: 100%; padding: .7rem 1rem; border: 2px solid var(--border-color); border-radius: 10px;
           font-size: .95rem; outline: none; transition: border-color .2s; box-sizing: border-box;
         }
-        .is-input:focus { border-color: #10b981; }
+        .is-input:focus { border-color: var(--primary); }
         .is-input-hint { font-size: .75rem; color: #888; margin-top: .3rem; }
 
         /* ── Form Panel ── */
         .is-form-panel {
-          background: #fff; border-radius: 18px; box-shadow: 0 4px 20px rgba(0,0,0,.09);
+          background: var(--bg-white); border-radius: 18px; box-shadow: 0 4px 20px rgba(0,0,0,.09);
           overflow: hidden; position: sticky; top: 90px;
         }
-        .is-form-header { background: linear-gradient(135deg, #065f46, #059669); padding: 1.4rem 1.8rem; color: #fff; }
+        .is-form-header { background: linear-gradient(135deg, var(--primary-800), var(--primary-600)); padding: 1.4rem 1.8rem; color: var(--bg-white); }
         .is-form-header h2 { font-size: 1.1rem; font-weight: 800; margin: 0 0 .2rem; }
         .is-form-header p  { font-size: .8rem; opacity: .85; margin: 0; }
         .is-form-body { padding: 1.5rem 1.8rem; }
         .is-form-field { margin-bottom: 1rem; }
-        .is-form-label { display: block; font-size: .82rem; font-weight: 600; color: #374737; margin-bottom: .35rem; }
+        .is-form-label { display: block; font-size: .82rem; font-weight: 600; color: var(--text-dark); margin-bottom: .35rem; }
         .is-nominal-preview {
-          background: #ecfdf5; border-radius: 10px; padding: .8rem 1rem;
+          background: var(--primary-lightest); border-radius: 10px; padding: .8rem 1rem;
           margin-bottom: 1rem; text-align: center;
         }
-        .is-nominal-preview-label { font-size: .73rem; color: #059669; font-weight: 600; }
-        .is-nominal-preview-val   { font-size: 1.6rem; font-weight: 900; color: #064e3b; }
+        .is-nominal-preview-label { font-size: .73rem; color: var(--primary-600); font-weight: 600; }
+        .is-nominal-preview-val   { font-size: 1.6rem; font-weight: 900; color: var(--primary-900); }
         .is-btn-lanjut {
-          width: 100%; padding: .9rem; background: linear-gradient(135deg, #059669, #10b981);
-          color: #fff; border: none; border-radius: 12px; font-size: .97rem; font-weight: 700;
+          width: 100%; padding: .9rem; background: linear-gradient(135deg, var(--primary-600), var(--primary));
+          color: var(--bg-white); border: none; border-radius: 12px; font-size: .97rem; font-weight: 700;
           cursor: pointer; transition: opacity .2s;
         }
         .is-btn-lanjut:hover { opacity: .9; }
         .is-btn-lanjut:disabled { opacity: .5; cursor: not-allowed; }
 
         /* ── Payment ── */
-        .is-payment { margin-top: 1.2rem; border-top: 1px solid #ecfdf5; padding-top: 1.2rem; }
-        .is-payment h3 { font-size: .95rem; font-weight: 800; color: #064e3b; margin: 0 0 .9rem; }
+        .is-payment { margin-top: 1.2rem; border-top: 1px solid var(--primary-lightest); padding-top: 1.2rem; }
+        .is-payment h3 { font-size: .95rem; font-weight: 800; color: var(--primary-900); margin: 0 0 .9rem; }
         .is-metode-tabs { display: flex; gap: .5rem; margin-bottom: 1.1rem; }
         .is-tab {
-          flex: 1; padding: .55rem; border: 2px solid #e0e0e0; border-radius: 10px;
-          background: #fff; cursor: pointer; font-size: .8rem; font-weight: 600;
-          color: #666; text-align: center; transition: all .15s;
+          flex: 1; padding: .55rem; border: 2px solid var(--border-color); border-radius: 10px;
+          background: var(--bg-white); cursor: pointer; font-size: .8rem; font-weight: 600;
+          color: var(--text-muted); text-align: center; transition: all .15s;
         }
-        .is-tab.active { border-color: #10b981; background: #ecfdf5; color: #064e3b; }
+        .is-tab.active { border-color: var(--primary); background: var(--primary-lightest); color: var(--primary-900); }
 
         /* QRIS */
         .is-qris-box { text-align: center; margin-bottom: 1rem; }
         .is-qris-img {
-          width: 160px; height: 160px; border: 3px solid #d1fae5; border-radius: 12px;
+          width: 160px; height: 160px; border: 3px solid var(--primary-100); border-radius: 12px;
           margin: 0 auto .7rem; display: flex; align-items: center; justify-content: center;
-          background: #f0fdf4; font-size: 3.5rem;
+          background: var(--primary-lightest); font-size: 3.5rem;
         }
-        .is-qris-label { font-size: .82rem; font-weight: 700; color: #064e3b; }
-        .is-qris-sub   { font-size: .73rem; color: #666; }
+        .is-qris-label { font-size: .82rem; font-weight: 700; color: var(--primary-900); }
+        .is-qris-sub   { font-size: .73rem; color: var(--text-muted); }
 
         /* Transfer */
         .is-rek-list { display: flex; flex-direction: column; gap: .6rem; margin-bottom: 1rem; }
         .is-rek-item {
-          display: flex; align-items: center; gap: .8rem; background: #f0fdf4;
-          border: 1px solid #d1fae5; border-radius: 10px; padding: .7rem .9rem;
+          display: flex; align-items: center; gap: .8rem; background: var(--primary-lightest);
+          border: 1px solid var(--primary-100); border-radius: 10px; padding: .7rem .9rem;
         }
-        .is-rek-bank   { font-size: .72rem; font-weight: 800; color: #059669; min-width: 44px; }
-        .is-rek-no     { font-size: .88rem; font-weight: 700; color: #111827; letter-spacing: .04em; }
-        .is-rek-an     { font-size: .72rem; color: #666; }
+        .is-rek-bank   { font-size: .72rem; font-weight: 800; color: var(--primary-600); min-width: 44px; }
+        .is-rek-no     { font-size: .88rem; font-weight: 700; color: var(--text-dark); letter-spacing: .04em; }
+        .is-rek-an     { font-size: .72rem; color: var(--text-muted); }
 
         /* WA Button */
         .is-btn-wa {
-          width: 100%; padding: .8rem; background: #10b981; color: #fff;
+          width: 100%; padding: .8rem; background: var(--primary); color: var(--bg-white);
           border: none; border-radius: 12px; font-size: .88rem; font-weight: 700;
           cursor: pointer; display: flex; align-items: center; justify-content: center; gap: .5rem;
           transition: background .2s;
         }
-        .is-btn-wa:hover { background: #059669; }
+        .is-btn-wa:hover { background: var(--primary-600); }
 
         /* ── Info Section ── */
         .is-info-section { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem 4rem; }
         .is-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
-        .is-info-card { background: #fff; border-radius: 16px; padding: 1.8rem; box-shadow: 0 2px 12px rgba(0,0,0,.06); border-top: 3px solid #10b981; }
-        .is-info-title { font-size: 1rem; font-weight: 800; color: #064e3b; margin: 0 0 .8rem; }
+        .is-info-card { background: var(--bg-white); border-radius: 16px; padding: 1.8rem; box-shadow: 0 2px 12px rgba(0,0,0,.06); border-top: 3px solid var(--primary); }
+        .is-info-title { font-size: 1rem; font-weight: 800; color: var(--primary-900); margin: 0 0 .8rem; }
         .is-info-list  { list-style: none; padding: 0; margin: 0; }
-        .is-info-list li { padding: .45rem 0 .45rem 1.6rem; position: relative; font-size: .85rem; color: #444; border-bottom: 1px solid #f0f0f0; }
+        .is-info-list li { padding: .45rem 0 .45rem 1.6rem; position: relative; font-size: .85rem; color: var(--text-main); border-bottom: 1px solid var(--border-color); }
         .is-info-list li:last-child { border-bottom: none; }
-        .is-info-list li::before { content: '▸'; position: absolute; left: 0; color: #10b981; font-weight: 700; }
+        .is-info-list li::before { content: '▸'; position: absolute; left: 0; color: var(--primary); font-weight: 700; }
 
         /* ── Responsive ── */
         @media (max-width: 860px) {
@@ -237,7 +241,7 @@ const InfaqShodaqoh = () => {
                 {/* Kiri — Kategori & Nominal */}
                 <div>
                     {/* Pilih Kategori */}
-                    <div style={{ background: '#fff', borderRadius: 18, padding: '1.8rem', boxShadow: '0 4px 20px rgba(0,0,0,.08)', marginBottom: '1.5rem' }}>
+                    <div style={{ background: 'var(--bg-white)', borderRadius: 18, padding: '1.8rem', boxShadow: '0 4px 20px rgba(0,0,0,.08)', marginBottom: '1.5rem' }}>
                         <div className="is-section-title">🎯 Pilih Peruntukan Infaq</div>
                         <div className="is-kat-grid">
                             {KATEGORI.map((k) => (
@@ -281,13 +285,13 @@ const InfaqShodaqoh = () => {
                     </div>
 
                     {/* Keutamaan Infaq */}
-                    <div style={{ background: 'linear-gradient(135deg, #065f46, #059669)', borderRadius: 18, padding: '2rem', color: '#fff' }}>
-                        <div style={{ fontSize: '.75rem', fontWeight: 700, letterSpacing: '.1em', textTransform: 'uppercase', color: '#d1fae5', marginBottom: '.4rem' }}>Al-Quran</div>
+                    <div style={{ background: 'linear-gradient(135deg, var(--primary-800), var(--primary-600))', borderRadius: 18, padding: '2rem', color: 'var(--bg-white)' }}>
+                        <div style={{ fontSize: '.75rem', fontWeight: 700, letterSpacing: '.1em', textTransform: 'uppercase', color: 'var(--primary-100)', marginBottom: '.4rem' }}>Al-Quran</div>
                         <h3 style={{ margin: '0 0 1.3rem', fontSize: '1.1rem', fontWeight: 800 }}>Keutamaan Berinfaq &amp; Bershodaqoh</h3>
                         {KEUTAMAAN.map((a, i) => (
                             <div key={i} style={{ background: 'rgba(255,255,255,.1)', borderRadius: 12, padding: '1rem 1.2rem', marginBottom: i < KEUTAMAAN.length - 1 ? '.8rem' : 0 }}>
                                 <p style={{ fontStyle: 'italic', fontSize: '.85rem', color: 'rgba(255,255,255,.9)', margin: '0 0 .4rem', lineHeight: 1.65 }}>{a.teks}</p>
-                                <span style={{ fontSize: '.73rem', fontWeight: 700, color: '#d1fae5' }}>{a.ayat}</span>
+                                <span style={{ fontSize: '.73rem', fontWeight: 700, color: 'var(--primary-100)' }}>{a.ayat}</span>
                             </div>
                         ))}
                     </div>
@@ -341,7 +345,7 @@ const InfaqShodaqoh = () => {
                                         {/* Ganti dengan: <img src="/qris-lazis-dmi.png" alt="QRIS" style={{width:'160px',borderRadius:12}} /> */}
                                         <div className="is-qris-label">QRIS Lazis DMI DKI Jakarta</div>
                                         <div className="is-qris-sub">Scan menggunakan m-banking atau e-wallet Anda</div>
-                                        <div style={{ marginTop: '.6rem', fontSize: '.82rem', background: '#ecfdf5', padding: '.4rem .8rem', borderRadius: 8, color: '#059669', fontWeight: 600 }}>
+                                        <div style={{ marginTop: '.6rem', fontSize: '.82rem', background: 'var(--primary-lightest)', padding: '.4rem .8rem', borderRadius: 8, color: 'var(--primary-600)', fontWeight: 600 }}>
                                             Nominal: {formatRp(nominalNum)}
                                         </div>
                                     </div>
@@ -363,7 +367,7 @@ const InfaqShodaqoh = () => {
                                                 </div>
                                             </div>
                                         ))}
-                                        <div style={{ fontSize: '.8rem', background: '#ecfdf5', padding: '.5rem .9rem', borderRadius: 8, color: '#059669', fontWeight: 600 }}>
+                                        <div style={{ fontSize: '.8rem', background: 'var(--primary-lightest)', padding: '.5rem .9rem', borderRadius: 8, color: 'var(--primary-600)', fontWeight: 600 }}>
                                             Nominal Transfer: {formatRp(nominalNum)}
                                         </div>
                                     </div>
@@ -382,8 +386,8 @@ const InfaqShodaqoh = () => {
             {/* ── Info Tambahan ── */}
             <div className="is-info-section">
                 <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-                    <div style={{ fontSize: '.75rem', fontWeight: 700, letterSpacing: '.1em', textTransform: 'uppercase', color: '#059669', marginBottom: '.3rem' }}>Panduan</div>
-                    <h2 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#111827', margin: 0 }}>Tentang Infaq &amp; Shodaqoh</h2>
+                    <div style={{ fontSize: '.75rem', fontWeight: 700, letterSpacing: '.1em', textTransform: 'uppercase', color: 'var(--primary-600)', marginBottom: '.3rem' }}>Panduan</div>
+                    <h2 style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--text-dark)', margin: 0 }}>Tentang Infaq &amp; Shodaqoh</h2>
                 </div>
                 <div className="is-info-grid">
                     <div className="is-info-card">
@@ -400,7 +404,7 @@ const InfaqShodaqoh = () => {
                         <ul className="is-info-list">
                             <li>Shodaqoh bersifat lebih luas — mencakup segala bentuk kebaikan, termasuk senyum</li>
                             <li>Shodaqoh jariyah memberikan pahala yang terus mengalir meski pemberi telah wafat</li>
-                            <li>Tidak terbatas pada harta; waktu, tenaga, dan ilmu juga termasuk shodaqoh</li>
+                            <li>Tidak terbatas pada harta; waktu, tenaga, and ilmu juga termasuk shodaqoh</li>
                             <li>Allah melipatgandakan pahala shodaqoh hingga 700 kali lipat (QS. Al-Baqarah: 261)</li>
                         </ul>
                     </div>
